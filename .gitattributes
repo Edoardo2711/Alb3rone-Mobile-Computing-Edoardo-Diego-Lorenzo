@@ -1,0 +1,27 @@
+# Gestione automatica fine riga
+* text=auto
+
+# Forza l'uso di LF (Linux style) per gli script e i file di configurazione di Unity
+# Questo evita conflitti inutili tra diversi sistemi operativi
+*.cs text eol=lf
+*.unity text eol=lf
+*.asset text eol=lf
+*.prefab text eol=lf
+*.mat text eol=lf
+*.meta text eol=lf
+*.controller text eol=lf
+*.csproj text eol=lf
+*.sln text eol=lf
+
+# Tratta i file binari come tali (non cercare di cambiare i ritorni a capo)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.psd binary
+*.tga binary
+*.wav binary
+*.mp3 binary
+*.ogg binary
+*.fbx binary
+*.obj binary
+*.zip binary
