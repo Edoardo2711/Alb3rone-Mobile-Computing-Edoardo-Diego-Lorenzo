@@ -181,3 +181,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   moveSpeed: 5
   rb: {fileID: 8001385350159907949}
+  AzioneMovimento:
+    m_Name: Azione Movimento
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 2be5042f-d22c-4b07-a9f2-6635c4e5ce1f
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  moveAction:
+    m_Name: Move
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 83436a76-42fb-4397-9e2d-af5fa4db7590
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
