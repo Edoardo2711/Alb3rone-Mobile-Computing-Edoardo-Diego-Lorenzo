@@ -2,7 +2,7 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!78 &1
 TagManager:
-  serializedVersion: 2
+  serializedVersion: 3
   tags: []
   layers:
   - Default
@@ -41,3 +41,23 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Terreno
+    uniqueID: 1897369343
+    locked: 0
+  - name: CamminaDavanti
+    uniqueID: 2145162759
+    locked: 0
+  - name: Collisioni
+    uniqueID: 3643840039
+    locked: 0
+  - name: Player
+    uniqueID: 3828018683
+    locked: 0
+  - name: CamminaDietro
+    uniqueID: 1312198191
+    locked: 0
+  - name: Decorazioni
+    uniqueID: 954166673
+    locked: 0
+  m_RenderingLayers:
+  - Default
