@@ -302,8 +302,8 @@ MonoBehaviour:
     m_TextWithWhitespace: "Tile Palette\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 1249
-    y: 79
+    x: 1250
+    y: 24
     width: 670
     height: 907
   m_SerializedDataModeController:
@@ -383,7 +383,7 @@ MonoBehaviour:
   m_Pos:
     serializedVersion: 2
     x: 0
-    y: 43
+    y: 0
     width: 1920
     height: 36
   m_SerializedDataModeController:
@@ -700,7 +700,7 @@ MonoBehaviour:
   m_Pos:
     serializedVersion: 2
     x: 0
-    y: 79
+    y: 24
     width: 300
     height: 428
   m_SerializedDataModeController:
@@ -771,8 +771,8 @@ MonoBehaviour:
     m_TextWithWhitespace: "Scene\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 301
-    y: 79
+    x: 302
+    y: 24
     width: 946
     height: 428
   m_SerializedDataModeController:
@@ -1263,7 +1263,7 @@ MonoBehaviour:
   m_Position:
     m_Target: {x: -13.803904, y: 0.6048137, z: -0.040585652}
     speed: 2
-    m_Value: {x: -13.234653, y: 0.6048137, z: -0.034531787}
+    m_Value: {x: -13.803904, y: 0.6048137, z: -0.040585652}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1301,7 +1301,7 @@ MonoBehaviour:
       m_Fade:
         m_Target: 0
         speed: 2
-        m_Value: 0.7349976
+        m_Value: 0
       m_Color: {r: 0.5, g: 0.5, b: 0.5, a: 0.4}
       m_Pivot: {x: 0, y: 0, z: 0}
       m_Size: {x: 1, y: 1}
@@ -1315,7 +1315,7 @@ MonoBehaviour:
   m_Size:
     m_Target: 14.058576
     speed: 2
-    m_Value: 13.453182
+    m_Value: 14.058576
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -1599,7 +1599,7 @@ MonoBehaviour:
   m_Pos:
     serializedVersion: 2
     x: 0
-    y: 533
+    y: 478
     width: 1248
     height: 453
   m_SerializedDataModeController:
@@ -1650,40 +1650,39 @@ MonoBehaviour:
       m_Data: 67358
     m_ExpandedIDs:
     - m_Data: 0
-    - m_Data: 58594
-    - m_Data: 58596
-    - m_Data: 58598
-    - m_Data: 58600
-    - m_Data: 58602
-    - m_Data: 58604
-    - m_Data: 58606
-    - m_Data: 58608
-    - m_Data: 58610
-    - m_Data: 58612
-    - m_Data: 58614
-    - m_Data: 58616
-    - m_Data: 58618
-    - m_Data: 58620
-    - m_Data: 58622
-    - m_Data: 58624
-    - m_Data: 58626
-    - m_Data: 58628
-    - m_Data: 58630
-    - m_Data: 58632
-    - m_Data: 58634
-    - m_Data: 58636
-    - m_Data: 58638
-    - m_Data: 58640
-    - m_Data: 58642
-    - m_Data: 58644
-    - m_Data: 58646
-    - m_Data: 58648
-    - m_Data: 58650
-    - m_Data: 1000000000
+    - m_Data: 66812
+    - m_Data: 66814
+    - m_Data: 66816
+    - m_Data: 66818
+    - m_Data: 66820
+    - m_Data: 66822
+    - m_Data: 66824
+    - m_Data: 66826
+    - m_Data: 66828
+    - m_Data: 66830
+    - m_Data: 66832
+    - m_Data: 66834
+    - m_Data: 66836
+    - m_Data: 66838
+    - m_Data: 66840
+    - m_Data: 66842
+    - m_Data: 66844
+    - m_Data: 66846
+    - m_Data: 66848
+    - m_Data: 66850
+    - m_Data: 66852
+    - m_Data: 66854
+    - m_Data: 66856
+    - m_Data: 66858
+    - m_Data: 66860
+    - m_Data: 66862
+    - m_Data: 66864
+    - m_Data: 66866
+    - m_Data: 66868
     m_RenameOverlay:
       m_UserAcceptedRename: 0
-      m_Name: Palet CamminaDavanti
-      m_OriginalName: Palet CamminaDavanti
+      m_Name: 
+      m_OriginalName: 
       m_EditFieldRect:
         serializedVersion: 2
         x: 0
@@ -1691,10 +1690,10 @@ MonoBehaviour:
         width: 0
         height: 0
       m_UserData:
-        m_Data: 60526
+        m_Data: 0
       m_IsWaitingForDelay: 0
       m_IsRenaming: 0
-      m_OriginalEventType: 0
+      m_OriginalEventType: 11
       m_IsRenamingFilename: 1
       m_TrimLeadingAndTrailingWhitespace: 0
       m_ClientGUIView: {fileID: 10}
@@ -1712,35 +1711,35 @@ MonoBehaviour:
       m_Data: 0
     m_ExpandedIDs:
     - m_Data: 0
-    - m_Data: 58594
-    - m_Data: 58596
-    - m_Data: 58598
-    - m_Data: 58600
-    - m_Data: 58602
-    - m_Data: 58604
-    - m_Data: 58606
-    - m_Data: 58608
-    - m_Data: 58610
-    - m_Data: 58612
-    - m_Data: 58614
-    - m_Data: 58616
-    - m_Data: 58618
-    - m_Data: 58620
-    - m_Data: 58622
-    - m_Data: 58624
-    - m_Data: 58626
-    - m_Data: 58628
-    - m_Data: 58630
-    - m_Data: 58632
-    - m_Data: 58634
-    - m_Data: 58636
-    - m_Data: 58638
-    - m_Data: 58640
-    - m_Data: 58642
-    - m_Data: 58644
-    - m_Data: 58646
-    - m_Data: 58648
-    - m_Data: 58650
+    - m_Data: 66812
+    - m_Data: 66814
+    - m_Data: 66816
+    - m_Data: 66818
+    - m_Data: 66820
+    - m_Data: 66822
+    - m_Data: 66824
+    - m_Data: 66826
+    - m_Data: 66828
+    - m_Data: 66830
+    - m_Data: 66832
+    - m_Data: 66834
+    - m_Data: 66836
+    - m_Data: 66838
+    - m_Data: 66840
+    - m_Data: 66842
+    - m_Data: 66844
+    - m_Data: 66846
+    - m_Data: 66848
+    - m_Data: 66850
+    - m_Data: 66852
+    - m_Data: 66854
+    - m_Data: 66856
+    - m_Data: 66858
+    - m_Data: 66860
+    - m_Data: 66862
+    - m_Data: 66864
+    - m_Data: 66866
+    - m_Data: 66868
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
