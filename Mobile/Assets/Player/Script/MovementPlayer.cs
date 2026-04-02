@@ -20,7 +20,7 @@ public class MovementPlayer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        rb.velocity = moveInput * Velocita;
+        rb.linearVelocity = moveInput * Velocita;
     }
 
     public void Move(InputAction.CallbackContext context)
