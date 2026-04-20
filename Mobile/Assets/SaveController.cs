@@ -1,5 +1,5 @@
 using UnityEngine;
-using Unity.Cinemachine; // <-- NOTA: In Cinemachine 3 si scrive così
+using Cinemachine;
 using System.IO;
 
 public class SaveController : MonoBehaviour
@@ -13,15 +13,37 @@ public class SaveController : MonoBehaviour
 
     public void SaveGame()
     {
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+
+        // CONTROLLO DI SICUREZZA 1: Il Player è la cosa più importante
+        if (playerObj == null)
+        {
+            Debug.LogError("ERRORE SALVATAGGIO: Il Player non è stato trovato! Controlla il tag 'Player'.");
+            return;
+        }
+
+        // Cerchiamo il confiner, ma se non c'è non ci disperiamo
+        CinemachineConfiner2D confiner = FindFirstObjectByType<CinemachineConfiner2D>();
+        string boundaryName = "";
+
+        if (confiner != null && confiner.m_BoundingShape2D != null)
+        {
+            boundaryName = confiner.m_BoundingShape2D.gameObject.name;
+        }
+        else
+        {
+            Debug.LogWarning("Nessun Confiner2D trovato o assegnato. Salvo solo la posizione del player.");
+        }
+
+        // Creiamo i dati
         SaveData saveData = new SaveData
         {
-            playerPosition = GameObject.FindGameObjectWithTag("Player").transform.position,
-            // NOTA: m_BoundingShape2D è diventato BoundingShape2D
-            mapBoundary = FindFirstObjectByType<CinemachineConfiner2D>().BoundingShape2D.gameObject.name
+            playerPosition = playerObj.transform.position,
+            mapBoundary = boundaryName
         };
 
-        Debug.Log("Save path: " + saveLocation);
         File.WriteAllText(saveLocation, JsonUtility.ToJson(saveData));
+        Debug.Log("Gioco Salvato Correttamente in: " + saveLocation);
     }
 
     public void LoadGame()
@@ -30,13 +52,27 @@ public class SaveController : MonoBehaviour
         {
             SaveData saveData = JsonUtility.FromJson<SaveData>(File.ReadAllText(saveLocation));
 
-            GameObject.FindGameObjectWithTag("Player").transform.position = saveData.playerPosition;
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null)
+            {
+                player.transform.position = saveData.playerPosition;
+            }
 
-            FindFirstObjectByType<CinemachineConfiner2D>().BoundingShape2D = GameObject.Find(saveData.mapBoundary).GetComponent<PolygonCollider2D>();
+            // Ripristiniamo i bordi SOLO se nel salvataggio c'era scritto un nome
+            if (!string.IsNullOrEmpty(saveData.mapBoundary))
+            {
+                CinemachineConfiner2D confiner = FindFirstObjectByType<CinemachineConfiner2D>();
+                GameObject boundaryObj = GameObject.Find(saveData.mapBoundary);
+
+                if (confiner != null && boundaryObj != null)
+                {
+                    confiner.m_BoundingShape2D = boundaryObj.GetComponent<PolygonCollider2D>();
+                }
+            }
         }
         else
         {
-            SaveGame();
+            Debug.Log("Nessun file di salvataggio trovato.");
         }
     }
 }
