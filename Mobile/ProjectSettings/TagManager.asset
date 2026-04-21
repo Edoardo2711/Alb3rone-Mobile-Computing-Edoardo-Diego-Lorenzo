@@ -11,7 +11,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - ostacoli
   - 
   - 
   - 
@@ -49,6 +49,9 @@ TagManager:
     locked: 0
   - name: Collisioni
     uniqueID: 3643840039
+    locked: 0
+  - name: Mob
+    uniqueID: 2706359165
     locked: 0
   - name: Player
     uniqueID: 3828018683
