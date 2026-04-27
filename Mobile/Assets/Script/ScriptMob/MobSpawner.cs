@@ -1,93 +1,95 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-
-// Definiamo la nostra "ricetta" per i mob
-[System.Serializable]
-public class MobType
-{
-    public string name; 
-    public GameObject prefab; 
-    public int amountToSpawn; 
-}
 
 public class MobSpawner : MonoBehaviour
 {
-    [Header("Impostazioni Gruppi Mob")]
-    public Transform playerTransform; 
-    public MobType[] mobsToSpawn; 
+    [Header("Prefab")]
+    public List<GameObject> mobPrefabs;
 
-    [Header("Area di Spawn (Poligono)")]
-    // Qui inseriremo il nostro PolygonCollider2D
-    public PolygonCollider2D spawnArea; 
+    [Header("Riferimenti Area")]
+    // Il PolygonCollider2D interno che delimita dove nascono i mob
+    public PolygonCollider2D spawnAreaCollider;
+    [Header("Limite Mob")]
+    public int maxMobsInScene = 10;
+    [Header("Impostazioni Spawn")]
+    public float spawnInterval = 3f;
+    public int maxAttempts = 10;
+    public float overlapCheckRadius = 0.2f;
 
-    [Header("Evitare le Collisioni")]
-    public LayerMask obstacleLayer; 
-    public float mobRadiusCheck = 0.5f; 
-    public int maxAttemptsPerMob = 30; // Alzato a 30 perché la forma irregolare richiede più tentativi
+    private bool playerInZone = false;
+    private LayerMask obstacleLayer;
 
     void Start()
     {
-        // Controllo di sicurezza vitale per evitare errori NullReference
-        if (spawnArea == null)
-        {
-            Debug.LogError("Attenzione: Non hai assegnato il PolygonCollider2D allo script MobSpawner!");
-            return;
-        }
-
-        SpawnAllMobs();
+        obstacleLayer = LayerMask.GetMask("Ostacoli");
+        StartCoroutine(SpawnLoop());
     }
 
-    void SpawnAllMobs()
+    Vector2 GetRandomPointInPolygon()
     {
-        // Otteniamo i "Bounds" (i limiti del rettangolo immaginario che racchiude tutto il poligono)
-        Bounds bounds = spawnArea.bounds;
+        Bounds bounds = spawnAreaCollider.bounds;
 
-        foreach (MobType currentMobType in mobsToSpawn)
+        for (int i = 0; i < maxAttempts; i++)
         {
-            for (int i = 0; i < currentMobType.amountToSpawn; i++)
-            {
-                bool hasSpawned = false;
-                int attempts = 0;
+            Vector2 candidate = new Vector2(
+                Random.Range(bounds.min.x, bounds.max.x),
+                Random.Range(bounds.min.y, bounds.max.y)
+            );
 
-                while (!hasSpawned && attempts < maxAttemptsPerMob)
-                {
-                    // 1. Genera un punto a caso dentro i limiti (bounds)
-                    float randomX = Random.Range(bounds.min.x, bounds.max.x);
-                    float randomY = Random.Range(bounds.min.y, bounds.max.y);
-                    Vector2 randomPosition = new Vector2(randomX, randomY);
+            if (spawnAreaCollider.OverlapPoint(candidate))
+                return candidate;
+        }
 
-                    // 2. MAGIA DEL POLIGONO: Controlla se il punto estratto è effettivamente DENTRO la forma irregolare
-                    if (spawnArea.OverlapPoint(randomPosition))
-                    {
-                        // 3. Controlla se ci sono ostacoli (come i muri sulla Tilemap)
-                        Collider2D hit = Physics2D.OverlapCircle(randomPosition, mobRadiusCheck, obstacleLayer);
+        return Vector2.positiveInfinity;
+    }
 
-                        // Se non ci sono ostacoli, fai nascere il mob!
-                        if (hit == null)
-                        {
-                            GameObject newMob = Instantiate(currentMobType.prefab, randomPosition, Quaternion.identity);
-                            
-                            // Assegna il player al nuovo mob
-                            if (playerTransform != null)
-                            {
-                                MobController controller = newMob.GetComponent<MobController>();
-                                if (controller != null)
-                                {
-                                    controller.player = playerTransform;
-                                }
-                            }
+    void OnTriggerEnter2D(Collider2D other) 
+    {
+        Debug.Log($"[Spawner] Trigger colpito da: {other.gameObject.name} | Tag: {other.tag}");
+        if (other.CompareTag("Player") && other.isTrigger) playerInZone = true;
+    }
 
-                            hasSpawned = true; // Mob generato con successo, usciamo dal ciclo while
-                        }
-                    }
-                    
-                    attempts++;
-                }
+    void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Player") && other.isTrigger) playerInZone = false;
+    }
 
-                if (!hasSpawned)
-                {
-                    Debug.LogWarning("Non ho trovato spazio per il mob: " + currentMobType.name + " dopo " + maxAttemptsPerMob + " tentativi.");
-                }
-            }
+    bool IsPositionFree(Vector2 point)
+    {
+        return Physics2D.OverlapCircle(point, overlapCheckRadius, obstacleLayer) == null;
+    }
+
+    IEnumerator SpawnLoop()
+{
+    while (true)
+    {
+        yield return new WaitForSeconds(spawnInterval);
+
+        if (!playerInZone || mobPrefabs.Count == 0)
+        {
+            Debug.Log($"[Spawner] Skip — playerInZone: {playerInZone}, prefab count: {mobPrefabs.Count}");
+            continue;
+        }
+
+        // Conta i mob attualmente in scena tramite tag
+        int currentMobs = GameObject.FindGameObjectsWithTag("Mob").Length;
+        if (currentMobs >= maxMobsInScene)
+        {
+            Debug.Log($"[Spawner] Limite mob raggiunto ({currentMobs}/{maxMobsInScene})");
+            continue;
+        }
+
+        Vector2 spawnPoint = GetRandomPointInPolygon();
+        if (spawnPoint == Vector2.positiveInfinity) continue;
+
+        if (IsPositionFree(spawnPoint))
+        {
+            GameObject prefab = mobPrefabs[Random.Range(0, mobPrefabs.Count)];
+            GameObject mob = Instantiate(prefab, spawnPoint, Quaternion.identity);
+            mob.tag = "Mob"; // assicura che il tag sia impostato
+            Debug.Log($"[Spawner] Mob spawnato in {spawnPoint} ({currentMobs + 1}/{maxMobsInScene})");
         }
     }
+}
 }
