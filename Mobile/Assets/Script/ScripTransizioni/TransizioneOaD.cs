@@ -16,16 +16,15 @@ public class TransizioneOaD : MonoBehaviour
         confiner = FindObjectOfType<CinemachineConfiner >();
     }
 
-    private void OnTriggerEnter2D (Collider2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
+{
+    // Ignora il collider fisico, reagisce solo al trigger del Player
+    if (collision.gameObject.CompareTag("Player") && collision.isTrigger)
     {
-        if (collision.gameObject.CompareTag("Player"))
-        {
-            confiner.m_BoundingShape2D = mapBoundry;
-            vcam.m_Lens.OrthographicSize = newCameraSize;
-            UpdatePlayerPosition(collision.gameObject);
-        }
+        confiner.m_BoundingShape2D = mapBoundry;
+        UpdatePlayerPosition(collision.gameObject);
     }
-
+}
     private void UpdatePlayerPosition(GameObject player)
     {
         Vector3 newPos = player.transform.position;

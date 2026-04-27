@@ -1,58 +1,118 @@
 using UnityEngine;
+using Pathfinding;
 
-public class MobController : MonoBehaviour
+public class MobAI : MonoBehaviour
 {
-    [Header("Impostazioni Movimento")]
-    public float speed = 3f;
-    public float aggroRange = 8f; // Distanza entro la quale il mob "vede" il player
-
     [Header("Riferimenti")]
-    public Transform player; 
+    public Transform player;
 
-    // Variabile per tenere traccia della direzione verso cui guarda il mob (di default a destra)
-    private bool isFacingRight = true;
+    [Header("Movimento")]
+    public float moveSpeed = 3f;
+    public float chaseRange = 5f;      // distanza entro cui insegue il Player
+    public float waypointRange = 3f;   // raggio entro cui sceglie un nuovo waypoint casuale
+    public float waypointReachedDist = 0.3f; // distanza per considerare il waypoint raggiunto
+
+    [Header("Pathfinding")]
+    public float repathRate = 0.5f;    // secondi tra un ricalcolo del path e l'altro
+
+    private Seeker seeker;
+    private Rigidbody2D rb;
+    private Path currentPath;
+    private int currentWaypoint = 0;
+    private float repathTimer = 0f;
+    private Vector2 patrolTarget;
+    private bool isChasing = false;
+
+    void Start()
+    {
+        seeker = GetComponent<Seeker>();
+        rb = GetComponent<Rigidbody2D>();
+
+        // Trova il Player automaticamente se non assegnato
+        if (player == null)
+            player = GameObject.FindGameObjectWithTag("Player")?.transform;
+
+        PickNewPatrolTarget();
+        RequestPath(patrolTarget);
+    }
 
     void Update()
     {
-        // Evitiamo errori se il player non è assegnato o è stato distrutto
+        if (player == null)
+    {
+        Debug.LogWarning("[MobAI] Player non trovato!");
+        return;
+    }
+
         if (player == null) return;
 
-        // Calcola la distanza tra il mob e il player
-        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+        float distToPlayer = Vector2.Distance(transform.position, player.position);
+        isChasing = distToPlayer <= chaseRange;
 
-        // Se il player è nel raggio d'azione, inseguilo
-        if (distanceToPlayer <= aggroRange)
+        repathTimer += Time.deltaTime;
+        if (repathTimer >= repathRate)
         {
-            ChasePlayer();
+            repathTimer = 0f;
+
+            if (isChasing)
+            {
+                // Ricalcola path verso il Player
+                RequestPath(player.position);
+            }
+            else
+            {
+                // Se ha raggiunto il waypoint di pattuglia, ne sceglie uno nuovo
+                if (Vector2.Distance(transform.position, patrolTarget) <= waypointRange)
+                    PickNewPatrolTarget();
+
+                RequestPath(patrolTarget);
+            }
         }
     }
 
-    void ChasePlayer()
+    void FixedUpdate()
     {
-        // 1. Logica di Movimento verso il player
-        transform.position = Vector2.MoveTowards(transform.position, player.position, speed * Time.deltaTime);
+        if (currentPath == null) return;
+        if (currentWaypoint >= currentPath.vectorPath.Count) return;
 
-        // 2. Logica di Ribaltamento (Flip)
-        // Se il player è a destra del mob e il mob guarda a sinistra...
-        if (player.position.x > transform.position.x && !isFacingRight)
-        {
-            Flip();
-        }
-        // ...altrimenti, se il player è a sinistra del mob e il mob guarda a destra...
-        else if (player.position.x < transform.position.x && isFacingRight)
-        {
-            Flip();
-        }
+        Vector2 direction = ((Vector2)currentPath.vectorPath[currentWaypoint] - rb.position).normalized;
+        rb.MovePosition(rb.position + direction * moveSpeed * Time.fixedDeltaTime);
+
+        // Avanza al prossimo waypoint se sufficientemente vicino
+        if (Vector2.Distance(rb.position, currentPath.vectorPath[currentWaypoint]) <= waypointReachedDist)
+            currentWaypoint++;
     }
 
-    void Flip()
+    void RequestPath(Vector2 target)
     {
-        // Inverti lo stato della direzione
-        isFacingRight = !isFacingRight;
+        if (seeker.IsDone())
+            seeker.StartPath(transform.position, target, OnPathComplete);
+    }
 
-        // Prendi la scala attuale, moltiplica l'asse X per -1 e riassegnala
-        Vector3 localScale = transform.localScale;
-        localScale.x *= -1f;
-        transform.localScale = localScale;
+    void OnPathComplete(Path p)
+    {
+        if (p.error)
+        {
+            Debug.LogWarning($"[MobAI] Errore nel path: {p.errorLog}");
+            return;
+        }
+        currentPath = p;
+        currentWaypoint = 0;
+    }
+
+    // Sceglie un punto casuale nelle vicinanze come destinazione pattuglia
+    void PickNewPatrolTarget()
+    {
+        Vector2 randomOffset = Random.insideUnitCircle * waypointRange;
+        patrolTarget = (Vector2)transform.position + randomOffset;
+    }
+
+    // Visualizza il range di inseguimento nell'editor
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, chaseRange);
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, waypointRange);
     }
 }
