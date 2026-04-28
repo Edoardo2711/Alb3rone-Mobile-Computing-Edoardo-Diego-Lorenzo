@@ -7,17 +7,21 @@ public class MovementPlayer : MonoBehaviour
     private Rigidbody2D rb;
     private Animator animator;
     private Vector2 moveInput;
-
+    private Vector2 lastNonZeroDirection = Vector2.down;
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        animator.SetFloat("LastInputX", lastNonZeroDirection.x);
+        animator.SetFloat("LastInputY", lastNonZeroDirection.y);
+        animator.SetFloat("LookX", lastNonZeroDirection.x);
+        animator.SetFloat("LookY", lastNonZeroDirection.y);
     }
 
     void Update()
     {
         // Blocca movimento durante attacco
-        if (animator.GetCurrentAnimatorStateInfo(0).IsName("Attacco")) 
+        if (animator.GetCurrentAnimatorStateInfo(0).IsTag("Attack")) 
         {
             rb.velocity = Vector2.zero;
             return;
@@ -28,30 +32,31 @@ public class MovementPlayer : MonoBehaviour
 
     public void Move(InputAction.CallbackContext context)
     {
-        moveInput = context.ReadValue<Vector2>();
-
         if (context.canceled)
         {
             animator.SetBool("Camminando", false);
-            // Salva l'ultima direzione per l'idle direzionale
-            animator.SetFloat("LastInputX", moveInput.x);
-            animator.SetFloat("LastInputY", moveInput.y);
+            animator.SetFloat("LastInputX", lastNonZeroDirection.x);
+            animator.SetFloat("LastInputY", lastNonZeroDirection.y);
             moveInput = Vector2.zero;
         }
         else
         {
-            animator.SetBool("Camminando", true);
-            animator.SetFloat("InputX", moveInput.x);
-            animator.SetFloat("InputY", moveInput.y);
+            moveInput = context.ReadValue<Vector2>();
 
-            // Aggiorna LookX/Y qui, così PlayerAttacco ha sempre la direzione corretta
-            animator.SetFloat("LookX", moveInput.x);
-            animator.SetFloat("LookY", moveInput.y);
+            if (moveInput.sqrMagnitude > 0.01f)
+            {
+                lastNonZeroDirection = moveInput.normalized;
+
+                animator.SetBool("Camminando", true);
+                animator.SetFloat("InputX", moveInput.x);
+                animator.SetFloat("InputY", moveInput.y);
+                animator.SetFloat("LookX", lastNonZeroDirection.x);
+                animator.SetFloat("LookY", lastNonZeroDirection.y);
+            }
         }
     }
 
     // Proprietà pubblica per condividere la direzione con PlayerAttacco
-    public Vector2 LastDirection => moveInput == Vector2.zero
-        ? new Vector2(animator.GetFloat("LastInputX"), animator.GetFloat("LastInputY"))
-        : moveInput;
+    public Vector2 LastDirection => lastNonZeroDirection;
+        
 }
