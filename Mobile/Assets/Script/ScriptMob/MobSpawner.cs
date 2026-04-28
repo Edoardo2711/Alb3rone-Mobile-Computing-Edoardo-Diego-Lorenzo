@@ -47,12 +47,12 @@ public class MobSpawner : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other) 
     {
         Debug.Log($"[Spawner] Trigger colpito da: {other.gameObject.name} | Tag: {other.tag}");
-        if (other.CompareTag("Player") && other.isTrigger) playerInZone = true;
+        if (other.CompareTag("Player")) playerInZone = true;
     }
 
     void OnTriggerExit2D(Collider2D other)
     {
-        if (other.CompareTag("Player") && other.isTrigger) playerInZone = false;
+        if (other.CompareTag("Player")) playerInZone = false;
     }
 
     bool IsPositionFree(Vector2 point)

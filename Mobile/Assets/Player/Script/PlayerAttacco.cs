@@ -9,10 +9,10 @@ public class PlayerAttacco : MonoBehaviour
 
     [Header("Impostazioni Attacco")]
     public float attackRange = 0.5f;
-    public float attackRate = 2f;
+    public float attackRate = 3f;
     public LayerMask Mob;
     public float attackOffset = 0.5f;
-
+    public float attackDamage = 25f;
     private float nextAttackTime = 0f;
     private MovementPlayer movementPlayer;
 
@@ -20,56 +20,47 @@ public class PlayerAttacco : MonoBehaviour
     {
         // Prende il riferimento a MovementPlayer per leggere la direzione
         movementPlayer = GetComponent<MovementPlayer>();
+        if (animator == null)
+            animator = GetComponent<Animator>();
     }
-
-    // Aggiunge questo metodo in PlayerAttacco.cs
-
-// Wrapper senza parametri — questo appare nel dropdown
 
     public void OnAttack(InputAction.CallbackContext context)
     {
-        if (!context.performed) return;
+        if (!context.started) return;
+        TryAttack();
+    }
+
+    public void OnAttackInput()
+    {
+        TryAttack();
+    }
+
+    private void TryAttack()
+    {
         if (Time.time < nextAttackTime) return;
 
-        // Legge la direzione da MovementPlayer invece che da Input.GetAxisRaw
         Vector2 dir = movementPlayer.LastDirection;
 
-        // Aggiorna LookX/Y e sposta l'attackPoint nella direzione corretta
         animator.SetFloat("LookX", dir.x);
         animator.SetFloat("LookY", dir.y);
         attackPoint.localPosition = new Vector3(dir.x * attackOffset, dir.y * attackOffset, 0);
 
-        Attack();
+        animator.SetTrigger("Attacco");
+        DealDamage();
+
         nextAttackTime = Time.time + 1f / attackRate;
     }
 
-    public void OnAttackInput()
-{
-    // Invoke Unity Events chiama il metodo due volte (started + performed)
-    // Il cooldown nextAttackTime filtra i duplicati
-    if (Time.time < nextAttackTime) return;
-
-    Vector2 dir = movementPlayer.LastDirection;
-    animator.SetFloat("LookX", dir.x);
-    animator.SetFloat("LookY", dir.y);
-    attackPoint.localPosition = new Vector3(dir.x * attackOffset, dir.y * attackOffset, 0);
-
-    Attack();
-    nextAttackTime = Time.time + 1f / attackRate;
-}
-
-    void Attack()
+    private void DealDamage()
     {
-        animator.SetTrigger("Attacco");
-
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, Mob);
 
         foreach (Collider2D enemy in hitEnemies)
-{
-        MobHealth mobHealth = enemy.GetComponent<MobHealth>();
-        if (mobHealth != null)
-            mobHealth.TakeDamage(25f); // danno per colpo, modificabile
-}
+        {
+            MobHealth mobHealth = enemy.GetComponent<MobHealth>();
+            if (mobHealth != null)
+                mobHealth.TakeDamage(attackDamage);
+        }
     }
 
     void OnDrawGizmosSelected()
