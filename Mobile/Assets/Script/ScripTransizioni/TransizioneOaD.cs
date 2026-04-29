@@ -37,6 +37,6 @@ public class TransizioneOaD : MonoBehaviour
 
         player.transform.position = newPos;
         Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
-        if (rb != null) rb.velocity = Vector2.zero;
+        if (rb != null) rb.linearVelocity = Vector2.zero;
     }
 }

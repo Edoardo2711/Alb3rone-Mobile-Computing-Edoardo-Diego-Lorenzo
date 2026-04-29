@@ -23,11 +23,11 @@ public class MovementPlayer : MonoBehaviour
         // Blocca movimento durante attacco
         if (animator.GetCurrentAnimatorStateInfo(0).IsTag("Attack")) 
         {
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
             return;
         }
 
-        rb.velocity = moveInput * Velocita;
+        rb.linearVelocity = moveInput * Velocita;
     }
 
     public void Move(InputAction.CallbackContext context)

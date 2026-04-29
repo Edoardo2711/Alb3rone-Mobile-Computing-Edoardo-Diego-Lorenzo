@@ -72,7 +72,7 @@ public class ZoneTransition : MonoBehaviour
 
         // 4. Azzera la velocità per evitare scivolamento
         Rigidbody2D rb = collision.GetComponent<Rigidbody2D>();
-        if (rb != null) rb.velocity = Vector2.zero;
+        if (rb != null) rb.linearVelocity = Vector2.zero;
 
         // 5. Resetta il flag al frame successivo
         // (garantisce che i trigger della zona di destinazione non sparino subito)
