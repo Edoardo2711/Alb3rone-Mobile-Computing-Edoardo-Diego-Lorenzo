@@ -119,7 +119,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 112}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 124
+  controlID: 122
   draggingID: 0
 --- !u!114 &6
 MonoBehaviour:
@@ -668,12 +668,11 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 160.6}
-      m_SelectedIDs:
-      - m_Data: 163456
+      m_SelectedIDs: []
       m_LastClickedID:
         m_Data: 0
       m_ExpandedIDs:
-      - m_Data: -1556
+      - m_Data: -7382
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -1212,7 +1211,7 @@ MonoBehaviour:
   m_Position:
     m_Target: {x: 778.6838, y: 524.4114, z: -5.7315865}
     speed: 2
-    m_Value: {x: 888.36426, y: 555.692, z: -7.208506}
+    m_Value: {x: 778.6838, y: 524.4114, z: -5.7315865}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1264,7 +1263,7 @@ MonoBehaviour:
   m_Size:
     m_Target: 583.1583
     speed: 2
-    m_Value: 730.8508
+    m_Value: 583.1583
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -1559,15 +1558,15 @@ MonoBehaviour:
   m_FolderTreeState:
     scrollPos: {x: 0, y: 1.000061}
     m_SelectedIDs:
-    - m_Data: 161108
+    - m_Data: 165364
     m_LastClickedID:
-      m_Data: 161108
+      m_Data: 165364
     m_ExpandedIDs:
     - m_Data: 0
-    - m_Data: 160972
-    - m_Data: 160974
-    - m_Data: 160976
-    - m_Data: 160978
+    - m_Data: 165228
+    - m_Data: 165230
+    - m_Data: 165232
+    - m_Data: 165234
     - m_Data: 1000000000
     - m_Data: 2147483647
     m_RenameOverlay:
@@ -1602,10 +1601,10 @@ MonoBehaviour:
       m_Data: 0
     m_ExpandedIDs:
     - m_Data: 0
-    - m_Data: 160972
-    - m_Data: 160974
-    - m_Data: 160976
-    - m_Data: 160978
+    - m_Data: 165228
+    - m_Data: 165230
+    - m_Data: 165232
+    - m_Data: 165234
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1632,9 +1631,8 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs:
-    - m_Data: 163456
-    m_LastClickedInstanceID: 163456
+    m_SelectedInstanceIDs: []
+    m_LastClickedInstanceID: 0
     m_HadKeyboardFocusLastEvent: 0
     m_ExpandedInstanceIDs:
     - m_Data: 50522
