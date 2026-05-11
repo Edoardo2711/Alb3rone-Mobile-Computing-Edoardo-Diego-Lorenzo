@@ -1,7 +1,10 @@
+using System.Collections;
+using System.Collections.Generic;
+
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class ItemDragHandler : MonoBehaviour,IbeginDragHandler, IDragHandler, IEndDragHandler
+public class ItemDragHandler : MonoBehaviour,IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     Transform originalParent;
     CanvasGroup canvasGroup;
@@ -25,25 +28,27 @@ public class ItemDragHandler : MonoBehaviour,IbeginDragHandler, IDragHandler, IE
         canvasGroup.blocksRaycasts = true;
         canvasGroup.alpha = 1f;
 
-        Slot dropslot=eventData.pointerEnter?.getComponent<Slot>();
+        Slot dropslot=eventData.pointerEnter?.GetComponent<Slot>();
         Slot originalSlot = originalParent.GetComponent<Slot>();
         if (dropslot != null)
         {
-            if (dropslot.CanAcceptItem(originalSlot.Item))
+            if (dropslot.currentItem != null)
             {
-                dropslot.SetItem(originalSlot.Item);
-                originalSlot.ClearItem();
+                dropslot.currentItem.transform.SetParent(originalSlot.transform);
+                originalSlot.currentItem = dropslot.currentItem;
+                dropslot.currentItem.GetComponent<RectTransform>().anchoredPosition = Vector2.zero; // Center the item in the original slot
             }
             else
             {
-                transform.SetParent(originalParent);
-                transform.localPosition = Vector3.zero;
+                originalSlot.currentItem = null;
             }
+            transform.SetParent(dropslot.transform);
+            dropslot.currentItem = gameObject;
         }
         else
         {
             transform.SetParent(originalParent);
-            transform.localPosition = Vector3.zero;
         }
+        GetComponent<RectTransform>().anchoredPosition = Vector2.zero; // Center the item in its new slot
     }
 }
