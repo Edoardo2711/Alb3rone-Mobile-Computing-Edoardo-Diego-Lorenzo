@@ -1,7 +1,10 @@
 using UnityEngine;
 using Cinemachine;
 using System.IO;
+using System.Collections.Generic;
+using System.Collections;
 
+[System.Serializable]
 public class SaveController : MonoBehaviour
 {
     private string saveLocation;
@@ -42,7 +45,7 @@ public class SaveController : MonoBehaviour
         {
             playerPosition = playerObj.transform.position,
             mapBoundary = boundaryName,
-            InventorySaveData = inventoryController.GetInventoryItems()
+            inventorySaveData = inventoryController.GetInventoryItems()
         };
 
         File.WriteAllText(saveLocation, JsonUtility.ToJson(saveData));
@@ -57,7 +60,7 @@ public class SaveController : MonoBehaviour
 
             GameObject player = GameObject.FindGameObjectWithTag("Player");
 
-            InventoryController.setInventoryItems(saveData.InventorySaveData);
+            inventoryController.SetInventoryItems(saveData.inventorySaveData);
             if (player != null)
             {
                 player.transform.position = saveData.playerPosition;
