@@ -25,21 +25,17 @@
            // }
             //}
         }
-        void Update() {
-    if (Input.GetKeyDown(KeyCode.I)) { // O il tasto che preferisci
-        inventoryPanel.SetActive(!inventoryPanel.activeSelf);
-    }
 
     public List<InventorySaveData> GetInventoryItems()
     {
         List<InventorySaveData> invData = new List<InventorySaveData>();
         foreach (Transform slotTransform in inventoryPanel.transform)
         {
-            slot slot = slotTransform.GetComponent<slot>();
+            Slot slot = slotTransform.GetComponent<Slot>();
             if(slot.currentItem != null)
             {
-                Item itemComponent = slot.currentItem.GetComponent<Item>();
-                invData.Add(new InventorySaveData(item = item.ID, slotIndex = slotTransform.GetSiblingIndex()));
+                Item item = slot.currentItem.GetComponent<Item>();
+                invData.Add(new InventorySaveData{itemID = item.ID, slotIndex = slotTransform.GetSiblingIndex()});
             }
         }
         return invData;
