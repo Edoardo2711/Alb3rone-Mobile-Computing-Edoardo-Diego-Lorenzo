@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: -2371753927499752064}
   - component: {fileID: -1970524802079632775}
   - component: {fileID: 2431774039301046009}
+  - component: {fileID: -7316005531647381899}
   m_Layer: 7
   m_Name: Zombie
   m_TagString: Mob
@@ -191,6 +192,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e8cef5e98a298f478f2b2f25b2bf374, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MobAttack
+  targetTag: Player
+  target: {fileID: 0}
+  attackRange: 2
+  attackDamage: 10
+  attackCooldown: 1.5
+  attackHitDelay: 0.4
+  attackRecovery: 0.4
+  hitTolerance: 0.5
+  attackTrigger: Attacco
+  lookXParam: LookX
+  lookYParam: LookY
+  stopMobAIDuringAttack: 1
+  debugLog: 0
 --- !u!50 &-1970524802079632775
 Rigidbody2D:
   serializedVersion: 5
@@ -264,3 +278,24 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.18, y: 0.34}
   m_EdgeRadius: 0
+--- !u!114 &-7316005531647381899
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5308333671117386636}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9872453bdfb6a534db1942ab71a9af40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobAnimatorController
+  walkingBool: Camminando
+  lookXFloat: LookX
+  lookYFloat: LookY
+  hitTrigger: ColpoSubito
+  deathTrigger: Morte
+  startingDirection: {x: 0, y: -1}
+  minMovingSpeedSqr: 0.04
+  hitStunTime: 0.25
+  deathDuration: 1.6

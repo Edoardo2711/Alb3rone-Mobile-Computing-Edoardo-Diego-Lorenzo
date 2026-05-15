@@ -18,8 +18,15 @@ public class TransizioneDaF : MonoBehaviour
     // Ignora il collider fisico, reagisce solo al trigger del Player
     if (!collision.gameObject.CompareTag("Player")) return;
     
+    if (confiner != null && mapBoundry != null)
+{
     confiner.m_BoundingShape2D = mapBoundry;
     confiner.InvalidatePathCache();
+}
+else
+{
+    Debug.LogWarning($"[{nameof(TransizioneCaF)}] Confiner o mapBoundry non impostato!");
+}
     UpdatePlayerPosition(collision.gameObject);
     
 }

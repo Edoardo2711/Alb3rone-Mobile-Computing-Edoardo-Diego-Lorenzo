@@ -140,7 +140,7 @@ BlendTree:
     m_DirectBlendParameter: LookX
     m_Mirror: 0
   m_BlendParameter: LookX
-  m_BlendParameterY: LookX
+  m_BlendParameterY: LookY
   m_MinThreshold: 0
   m_MaxThreshold: 1
   m_UseAutomaticThresholds: 1
@@ -319,7 +319,7 @@ BlendTree:
     m_DirectBlendParameter: LookX
     m_Mirror: 0
   m_BlendParameter: LookX
-  m_BlendParameterY: LookX
+  m_BlendParameterY: LookY
   m_MinThreshold: 0
   m_MaxThreshold: 1
   m_UseAutomaticThresholds: 1
@@ -366,7 +366,7 @@ BlendTree:
     m_DirectBlendParameter: LookX
     m_Mirror: 0
   m_BlendParameter: LookX
-  m_BlendParameterY: LookX
+  m_BlendParameterY: LookY
   m_MinThreshold: 0
   m_MaxThreshold: 1
   m_UseAutomaticThresholds: 1
@@ -491,7 +491,7 @@ BlendTree:
     m_DirectBlendParameter: LookX
     m_Mirror: 0
   m_BlendParameter: LookX
-  m_BlendParameterY: LookX
+  m_BlendParameterY: LookY
   m_MinThreshold: 0
   m_MaxThreshold: 1
   m_UseAutomaticThresholds: 1
@@ -563,7 +563,7 @@ BlendTree:
     m_DirectBlendParameter: LookX
     m_Mirror: 0
   m_BlendParameter: LookX
-  m_BlendParameterY: LookX
+  m_BlendParameterY: LookY
   m_MinThreshold: 0
   m_MaxThreshold: 1
   m_UseAutomaticThresholds: 1

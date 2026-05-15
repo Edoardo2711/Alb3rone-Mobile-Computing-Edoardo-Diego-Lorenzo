@@ -14,7 +14,7 @@ public class MobAI : MonoBehaviour
 
     [Header("Pathfinding")]
     public float repathRate = 0.5f;    // secondi tra un ricalcolo del path e l'altro
-
+    private bool playerWarningLogged = false;
     private Seeker seeker;
     private Rigidbody2D rb;
     private Path currentPath;
@@ -40,11 +40,16 @@ public class MobAI : MonoBehaviour
     {
         if (player == null)
     {
-        Debug.LogWarning("[MobAI] Player non trovato!");
+        if (!playerWarningLogged)
+        {
+            Debug.LogWarning("[MobAI] Player non trovato!");
+            playerWarningLogged = true;
+        }
+        // tentativo di ri-trovare il player
+        var p = GameObject.FindGameObjectWithTag("Player");
+        if (p != null) { player = p.transform; playerWarningLogged = false; }
         return;
-    }
-
-        if (player == null) return;
+}
 
         float distToPlayer = Vector2.Distance(transform.position, player.position);
         isChasing = distToPlayer <= chaseRange;
