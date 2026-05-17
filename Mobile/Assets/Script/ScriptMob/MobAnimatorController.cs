@@ -16,8 +16,16 @@ public class MobAnimatorController : MonoBehaviour
     [Header("Settings")]
     public Vector2 startingDirection = Vector2.down;
     public float minMovingSpeedSqr = 0.04f;
-    public float hitStunTime = 0.25f;
-    public float deathDuration = 1.6f;
+    [Tooltip("Durata stun dopo un colpo. Tienilo basso (0.08-0.15) per non bloccare il mob.")]
+    public float hitStunTime = 0.1f;
+    [Tooltip("Se true, durante lo stun viene disabilitato MobAI. Tienilo OFF per non interrompere l'attacco del mob.")]
+    public bool disableAIDuringStun = false;
+    [Tooltip("Tempo (sec) prima che il mob venga distrutto dopo la morte. Tienilo coerente con la durata dell'animazione di morte.")]
+    public float deathDuration = 0.6f;
+    [Tooltip("Buffer extra dopo deathDuration prima della distruzione del GameObject.")]
+    public float destroyExtraDelay = 0.05f;
+    [Tooltip("Se true, lo sprite scompare gradualmente in fade-out durante deathDuration.")]
+    public bool fadeOutOnDeath = true;
 
     private Animator    animator;
     private MobAI       mobAI;
@@ -72,7 +80,7 @@ public class MobAnimatorController : MonoBehaviour
             return;
         }
 
-        Vector2 vel = rb.velocity;
+        Vector2 vel = rb.linearVelocity;
         bool moving = vel.sqrMagnitude > minMovingSpeedSqr;
 
         if (!string.IsNullOrEmpty(walkingBool))
@@ -103,10 +111,12 @@ public class MobAnimatorController : MonoBehaviour
     IEnumerator HitStun()
     {
         isStunned = true;
-        rb.velocity = Vector2.zero;
-        if (mobAI != null) mobAI.enabled = false;
+        // Non azzeriamo piu' la velocity ne' disabilitiamo l'AI:
+        // lasciamo che il mob continui a muoversi/attaccare.
+        // Lo stun serve solo a far giocare l'animazione del colpo nell'animator.
+        if (disableAIDuringStun && mobAI != null) mobAI.enabled = false;
         yield return new WaitForSeconds(hitStunTime);
-        if (!isDead && mobAI != null) mobAI.enabled = true;
+        if (disableAIDuringStun && !isDead && mobAI != null) mobAI.enabled = true;
         isStunned = false;
     }
 
@@ -117,10 +127,51 @@ public class MobAnimatorController : MonoBehaviour
         StopAllCoroutines();
         if (!string.IsNullOrEmpty(deathTrigger))
             animator.SetTrigger(deathTrigger);
-        rb.velocity    = Vector2.zero;
-        rb.isKinematic = true;
+        rb.linearVelocity = Vector2.zero;
+        rb.bodyType = RigidbodyType2D.Kinematic;
         if (TryGetComponent(out Collider2D col)) col.enabled = false;
         if (mobAI != null) mobAI.enabled = false;
-        Destroy(gameObject, deathDuration + 0.4f);
+        if (mobAttack != null) mobAttack.enabled = false;
+
+        StartCoroutine(DeathRoutine());
+    }
+
+    IEnumerator DeathRoutine()
+    {
+        if (fadeOutOnDeath)
+        {
+            var srs = GetComponentsInChildren<SpriteRenderer>(true);
+            // Memorizza i colori iniziali
+            Color[] startColors = new Color[srs.Length];
+            for (int i = 0; i < srs.Length; i++) startColors[i] = srs[i].color;
+
+            float t = 0f;
+            // Fade-out negli ultimi 50% di deathDuration
+            float fadeStart = deathDuration * 0.5f;
+            while (t < deathDuration)
+            {
+                t += Time.deltaTime;
+                if (t > fadeStart)
+                {
+                    float a = 1f - Mathf.Clamp01((t - fadeStart) / (deathDuration - fadeStart));
+                    for (int i = 0; i < srs.Length; i++)
+                    {
+                        if (srs[i] == null) continue;
+                        var c = startColors[i];
+                        c.a = a;
+                        srs[i].color = c;
+                    }
+                }
+                yield return null;
+            }
+        }
+        else
+        {
+            yield return new WaitForSeconds(deathDuration);
+        }
+
+        if (destroyExtraDelay > 0f) yield return new WaitForSeconds(destroyExtraDelay);
+
+        Destroy(gameObject);
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -9,11 +10,13 @@ public class PlayerAttacco : MonoBehaviour
 
     [Header("Impostazioni Attacco")]
     public float attackRange = 1.5f;
-    public float attackRate = 3f;
+    [Min(0.01f)] public float attackRate = 3f;
     [Tooltip("LayerMask opzionale. Se vuoto, vengono rilevati tutti i collider e filtrati per MobHealth.")]
     public LayerMask Mob;
     public float attackOffset = 0.6f;
     public float attackDamage = 25f;
+    [Tooltip("Ritardo tra l'inizio dell'animazione e l'applicazione del danno (sincronia con il frame del colpo).")]
+    public float hitDelay = 0.15f;
     public bool debugLog = true;
 
     private float nextAttackTime = 0f;
@@ -53,15 +56,28 @@ public class PlayerAttacco : MonoBehaviour
 
         if (animator != null) animator.SetTrigger("Attacco");
 
-        DealDamage();
+        // Danno applicato in ritardo per sincronizzarlo con il frame del colpo
+        StartCoroutine(DealDamageDelayed());
 
-        nextAttackTime = Time.time + 1f / attackRate;
+        float rate = Mathf.Max(attackRate, 0.01f);
+        nextAttackTime = Time.time + 1f / rate;
+    }
+
+    private IEnumerator DealDamageDelayed()
+    {
+        if (hitDelay > 0f) yield return new WaitForSeconds(hitDelay);
+        DealDamage();
     }
 
     private void DealDamage()
     {
-        // Niente filtro per layer: cerchiamo tutti i collider e filtriamo per MobHealth.
-        Collider2D[] hits = Physics2D.OverlapCircleAll(attackPoint.position, attackRange);
+        if (attackPoint == null) return;
+
+        // Se la LayerMask Mob e' impostata, la usiamo come filtro fisico.
+        // Altrimenti recuperiamo tutti i collider e filtriamo per MobHealth.
+        Collider2D[] hits = (Mob.value != 0)
+            ? Physics2D.OverlapCircleAll(attackPoint.position, attackRange, Mob)
+            : Physics2D.OverlapCircleAll(attackPoint.position, attackRange);
 
         int hitCount = 0;
         foreach (Collider2D col in hits)

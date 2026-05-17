@@ -7,6 +7,11 @@ public class MobHealth : MonoBehaviour
     public float maxHealth = 100f;
     private float currentHealth;
 
+    [Header("Invulnerabilita'")]
+    [Tooltip("Tempo (sec) di invulnerabilita' dopo aver subito danno.")]
+    public float invulnerabilityTime = 0.15f;
+    private float lastDamageTime = -999f;
+
     /// <summary>Invocato quando il mob riceve un colpo (ma non muore).</summary>
     public event Action OnHit;
 
@@ -23,6 +28,8 @@ public class MobHealth : MonoBehaviour
     public void TakeDamage(float damage)
     {
         if (IsDead) return;
+        if (Time.time - lastDamageTime < invulnerabilityTime) return;
+        lastDamageTime = Time.time;
 
         currentHealth -= damage;
         Debug.Log($"{gameObject.name} ricevuto {damage} danni. Vita: {currentHealth}/{maxHealth}");
@@ -42,9 +49,11 @@ public class MobHealth : MonoBehaviour
     void Die()
     {
         Debug.Log($"{gameObject.name} morto.");
+        // Salva il riferimento ai subscriber prima di invocare:
+        // se nessuno gestisce la distruzione, la facciamo noi.
+        bool hadSubscribers = OnDeath != null;
         OnDeath?.Invoke();
-        // Se nessun subscriber gestisce la distruzione, distruggi qui
-        if (OnDeath == null) Destroy(gameObject);
+        if (!hadSubscribers) Destroy(gameObject);
     }
 
     public float GetHealthPercent() => Mathf.Clamp01(currentHealth / maxHealth);

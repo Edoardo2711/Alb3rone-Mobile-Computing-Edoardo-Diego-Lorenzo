@@ -1,44 +1,59 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 using Cinemachine;
 
 public class TransizioneFaC : MonoBehaviour
 {
-  [SerializeField] PolygonCollider2D mapBoundry;
-  CinemachineConfiner confiner;
+    [FormerlySerializedAs("mapBoundry")]
+    [SerializeField] private PolygonCollider2D mapBoundary;
 
-  [SerializeField] Direction direction;
-  enum Direction {Up, Down, Left, Right}
-  private void Awake()
+    private CinemachineConfiner confiner;
+    private static bool isTeleporting = false;
+
+    private void Awake()
     {
-        confiner = FindObjectOfType<CinemachineConfiner >();
+        confiner = FindFirstObjectByType<CinemachineConfiner>();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
-{
-    // Ignora il collider fisico, reagisce solo al trigger del Player
-    if (!collision.gameObject.CompareTag("Player")) return;
-    
-    if (confiner != null && mapBoundry != null)
-{
-    confiner.m_BoundingShape2D = mapBoundry;
-    confiner.InvalidatePathCache();
-}
-else
-{
-    Debug.LogWarning($"[{nameof(TransizioneCaF)}] Confiner o mapBoundry non impostato!");
-}
-    UpdatePlayerPosition(collision.gameObject);
-    
-}
+    {
+        if (!collision.gameObject.CompareTag("Player")) return;
+        if (isTeleporting) return;
+        isTeleporting = true;
+
+        if (confiner != null && mapBoundary != null)
+        {
+            confiner.m_BoundingShape2D = mapBoundary;
+            confiner.InvalidatePathCache();
+        }
+        else
+        {
+            Debug.LogWarning($"[{nameof(TransizioneFaC)}] Confiner o mapBoundary non impostato!");
+        }
+
+        UpdatePlayerPosition(collision.gameObject);
+        StartCoroutine(ResetTeleportFlag());
+    }
 
     private void UpdatePlayerPosition(GameObject player)
     {
         Vector3 newPos = player.transform.position;
-
         newPos.x += 20;
 
+        // Aggiorna PRIMA il transform (immediato), POI sincronizza il rigidbody.
         player.transform.position = newPos;
         Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
-        if (rb != null) rb.velocity = Vector2.zero;
+        if (rb != null)
+        {
+            rb.position = newPos;
+            rb.linearVelocity = Vector2.zero;
+        }
+    }
+
+    private System.Collections.IEnumerator ResetTeleportFlag()
+    {
+        yield return new WaitForFixedUpdate();
+        yield return new WaitForFixedUpdate();
+        isTeleporting = false;
     }
 }

@@ -11,7 +11,7 @@ public class MobAttack : MonoBehaviour
     [Header("Combattimento")]
     public float attackRange = 2f;
     public float attackDamage = 10f;
-    public float attackCooldown = 1.5f;
+    [Min(0.05f)] public float attackCooldown = 1.5f;
 
     [Header("Timing animazione")]
     public float attackHitDelay = 0.4f;
@@ -74,7 +74,7 @@ public class MobAttack : MonoBehaviour
         Transform t = GetTarget();
         if (t == null) return;
         if (Vector2.Distance(transform.position, t.position) > attackRange) return;
-        nextAttackTime = Time.time + attackCooldown;
+        nextAttackTime = Time.time + Mathf.Max(attackCooldown, 0.05f);
         attackCo = StartCoroutine(DoAttack(t));
     }
 
@@ -105,7 +105,7 @@ public class MobAttack : MonoBehaviour
         Vector2 dir = ((Vector2)t.position - (Vector2)transform.position).normalized;
         SetLookDirection(dir);
 
-        rb.velocity = Vector2.zero;
+        if (rb != null) rb.linearVelocity = Vector2.zero;
         if (stopMobAIDuringAttack && mobAI != null) mobAI.enabled = false;
 
         if (animator != null && !string.IsNullOrEmpty(attackTrigger))
@@ -148,7 +148,13 @@ public class MobAttack : MonoBehaviour
         if (!string.IsNullOrEmpty(lookYParam)) animator.SetFloat(lookYParam, dir.y);
     }
 
-    void HandleHit() { CancelAttack(); }
+    // Quando il mob subisce un colpo NON annulliamo piu' il suo attacco corrente:
+    // altrimenti basta che il player picchi velocemente per rendere il mob
+    // incapace di portare a termine qualsiasi attacco. Il mob "committa" al colpo.
+    void HandleHit()
+    {
+        // no-op: il mob continua l'attacco anche se ferito
+    }
 
     void HandleDeath()
     {

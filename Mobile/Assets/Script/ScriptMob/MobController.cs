@@ -14,6 +14,14 @@ public class MobAI : MonoBehaviour
 
     [Header("Pathfinding")]
     public float repathRate = 0.5f;    // secondi tra un ricalcolo del path e l'altro
+
+    [Header("Pattuglia")]
+    [Tooltip("Layer degli ostacoli su cui validare i waypoint casuali.")]
+    public string obstacleLayerName = "Ostacoli";
+    [Tooltip("Tentativi di scegliere un waypoint libero da ostacoli.")]
+    public int patrolPickAttempts = 10;
+    public float patrolObstacleCheckRadius = 0.2f;
+
     private bool playerWarningLogged = false;
     private Seeker seeker;
     private Rigidbody2D rb;
@@ -22,11 +30,30 @@ public class MobAI : MonoBehaviour
     private float repathTimer = 0f;
     private Vector2 patrolTarget;
     private bool isChasing = false;
+    private LayerMask obstacleMask;
 
     void Start()
     {
         seeker = GetComponent<Seeker>();
         rb = GetComponent<Rigidbody2D>();
+
+        if (seeker == null)
+        {
+            Debug.LogError("[MobAI] Manca il componente Seeker su " + name + ". Componente disabilitato.");
+            enabled = false;
+            return;
+        }
+        if (rb == null)
+        {
+            Debug.LogError("[MobAI] Manca il Rigidbody2D su " + name + ". Componente disabilitato.");
+            enabled = false;
+            return;
+        }
+
+        // Risolvi la layer mask degli ostacoli
+        int idx = LayerMask.NameToLayer(obstacleLayerName);
+        if (idx < 0) idx = LayerMask.NameToLayer("ostacoli");
+        obstacleMask = (idx >= 0) ? (1 << idx) : 0;
 
         // Trova il Player automaticamente se non assegnato
         if (player == null)
@@ -39,17 +66,21 @@ public class MobAI : MonoBehaviour
     void Update()
     {
         if (player == null)
-    {
-        if (!playerWarningLogged)
         {
-            Debug.LogWarning("[MobAI] Player non trovato!");
-            playerWarningLogged = true;
+            if (!playerWarningLogged)
+            {
+                Debug.LogWarning("[MobAI] Player non trovato!");
+                playerWarningLogged = true;
+            }
+            // tentativo di ri-trovare il player
+            var p = GameObject.FindGameObjectWithTag("Player");
+            if (p != null)
+            {
+                player = p.transform;
+                playerWarningLogged = false;
+            }
+            return;
         }
-        // tentativo di ri-trovare il player
-        var p = GameObject.FindGameObjectWithTag("Player");
-        if (p != null) { player = p.transform; playerWarningLogged = false; }
-        return;
-}
 
         float distToPlayer = Vector2.Distance(transform.position, player.position);
         isChasing = distToPlayer <= chaseRange;
@@ -90,7 +121,7 @@ public class MobAI : MonoBehaviour
 
     void RequestPath(Vector2 target)
     {
-        if (seeker.IsDone())
+        if (seeker != null && seeker.IsDone())
             seeker.StartPath(transform.position, target, OnPathComplete);
     }
 
@@ -105,11 +136,22 @@ public class MobAI : MonoBehaviour
         currentWaypoint = 0;
     }
 
-    // Sceglie un punto casuale nelle vicinanze come destinazione pattuglia
+    // Sceglie un punto casuale nelle vicinanze come destinazione pattuglia,
+    // evitando di piazzarlo dentro ostacoli (se la layer e' definita).
     void PickNewPatrolTarget()
     {
-        Vector2 randomOffset = Random.insideUnitCircle * waypointRange;
-        patrolTarget = (Vector2)transform.position + randomOffset;
+        for (int i = 0; i < Mathf.Max(1, patrolPickAttempts); i++)
+        {
+            Vector2 candidate = (Vector2)transform.position + Random.insideUnitCircle * waypointRange;
+            if (obstacleMask.value == 0 ||
+                Physics2D.OverlapCircle(candidate, patrolObstacleCheckRadius, obstacleMask) == null)
+            {
+                patrolTarget = candidate;
+                return;
+            }
+        }
+        // Fallback: resta sul posto se non trova nulla di libero
+        patrolTarget = transform.position;
     }
 
     // Visualizza il range di inseguimento nell'editor

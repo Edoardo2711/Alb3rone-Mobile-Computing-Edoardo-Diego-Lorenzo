@@ -38,10 +38,10 @@ public class ZoneTransition : MonoBehaviour
 
     private void Awake()
     {
-        confiner = FindObjectOfType<CinemachineConfiner>();
+        confiner = FindFirstObjectByType<CinemachineConfiner>();
 
         if (changeCameraSize && vcam == null)
-            vcam = FindObjectOfType<CinemachineVirtualCamera>();
+            vcam = FindFirstObjectByType<CinemachineVirtualCamera>();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -64,15 +64,18 @@ public class ZoneTransition : MonoBehaviour
         if (changeCameraSize && vcam != null)
             vcam.m_Lens.OrthographicSize = newCameraSize;
 
-        // 3. Teletrasporta il player
+        // 3. Teletrasporta il player: PRIMA transform (immediato), POI rigidbody (sync fisica)
         Vector3 newPos = collision.transform.position;
         newPos.x += offset.x;
         newPos.y += offset.y;
-        collision.transform.position = newPos;
 
-        // 4. Azzera la velocità per evitare scivolamento
+        collision.transform.position = newPos;
         Rigidbody2D rb = collision.GetComponent<Rigidbody2D>();
-        if (rb != null) rb.velocity = Vector2.zero;
+        if (rb != null)
+        {
+            rb.position = newPos;
+            rb.linearVelocity = Vector2.zero;
+        }
 
         // 5. Resetta il flag al frame successivo
         // (garantisce che i trigger della zona di destinazione non sparino subito)

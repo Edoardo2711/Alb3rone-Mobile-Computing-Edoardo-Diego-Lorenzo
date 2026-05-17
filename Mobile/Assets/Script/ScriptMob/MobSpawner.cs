@@ -22,6 +22,12 @@ public class MobSpawner : MonoBehaviour
     public bool autoDetectPlayer = true;
     public float playerDetectionRange = 30f;
 
+    [Header("Comportamento alla uscita del Player")]
+    [Tooltip("Se true, distrugge i mob spawnati quando il Player esce dalla zona.")]
+    public bool destroyMobsOnPlayerExit = false;
+
+    private bool tagWarningLogged = false;
+
     private bool playerInZone = false;
     private LayerMask obstacleLayer;
     private Transform playerTransform;
@@ -81,7 +87,15 @@ public class MobSpawner : MonoBehaviour
 
     void OnTriggerExit2D(Collider2D other)
     {
-        if (IsPlayer(other.gameObject)) playerInZone = false;
+        if (!IsPlayer(other.gameObject)) return;
+        playerInZone = false;
+
+        if (destroyMobsOnPlayerExit)
+        {
+            for (int i = spawnedMobs.Count - 1; i >= 0; i--)
+                if (spawnedMobs[i] != null) Destroy(spawnedMobs[i]);
+            spawnedMobs.Clear();
+        }
     }
 
     bool IsPlayer(GameObject go)
@@ -132,7 +146,15 @@ public class MobSpawner : MonoBehaviour
             if (prefab == null) continue;
 
             GameObject mob = Instantiate(prefab, spawnPoint, Quaternion.identity);
-            try { mob.tag = "Mob"; } catch (UnityException) { }
+            try { mob.tag = "Mob"; }
+            catch (UnityException)
+            {
+                if (!tagWarningLogged)
+                {
+                    Debug.LogWarning("[Spawner] Tag 'Mob' non definito nel TagManager: i mob spawnati non avranno tag.");
+                    tagWarningLogged = true;
+                }
+            }
             spawnedMobs.Add(mob);
             Debug.Log($"[Spawner] '{mob.name}' spawnato in {spawnPoint} ({spawnedMobs.Count}/{maxMobsInScene})");
         }
