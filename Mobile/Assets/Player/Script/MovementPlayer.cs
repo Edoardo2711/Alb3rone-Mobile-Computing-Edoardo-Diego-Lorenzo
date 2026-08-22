@@ -10,6 +10,15 @@ public class MovementPlayer : MonoBehaviour
     [Range(0f, 0.5f)]
     public float inputDeadzone = 0.2f;
 
+    [Header("Attacco")]
+    [Tooltip("Frazione di velocita' mantenuta mentre il player attacca. 0 = fermo come prima, 1 = velocita' piena.")]
+    [Range(0f, 1f)]
+    public float attackMoveMultiplier = 0.45f;
+
+    [Header("Fluidita'")]
+    [Tooltip("Quanto in fretta la velocita' raggiunge quella desiderata (unita'/s^2). Valori alti = piu' reattivo, 0 = istantaneo come prima.")]
+    public float accelerazione = 80f;
+
     private Rigidbody2D rb;
     private Animator animator;
     private Vector2 moveInput;
@@ -40,16 +49,22 @@ public class MovementPlayer : MonoBehaviour
     {
         if (rb == null) return;
 
-        // Blocca movimento durante attacco
-        if (animator != null && animator.GetCurrentAnimatorStateInfo(0).IsTag("Attack"))
-        {
-            rb.linearVelocity = Vector2.zero;
-            return;
-        }
-
         // Clamp magnitudine per evitare diagonale piu' veloce (max 1)
         Vector2 input = Vector2.ClampMagnitude(moveInput, 1f);
-        rb.linearVelocity = input * Velocita;
+
+        // Durante l'attacco il player rallenta ma NON si inchioda: bloccarlo del tutto
+        // per l'intera durata della clip lo faceva sembrare fermo a mezz'aria.
+        float velocita = Velocita;
+        if (animator != null && animator.GetCurrentAnimatorStateInfo(0).IsTag("Attack"))
+            velocita *= attackMoveMultiplier;
+
+        Vector2 desiderata = input * velocita;
+
+        // Raggiungi la velocita' desiderata gradualmente invece che di scatto:
+        // toglie lo strappo sia all'inizio che alla fine dell'attacco.
+        rb.linearVelocity = (accelerazione > 0f)
+            ? Vector2.MoveTowards(rb.linearVelocity, desiderata, accelerazione * Time.deltaTime)
+            : desiderata;
     }
 
     public void Move(InputAction.CallbackContext context)

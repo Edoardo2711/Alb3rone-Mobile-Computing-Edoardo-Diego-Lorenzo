@@ -16,6 +16,8 @@ GameObject:
   - component: {fileID: -2308853791952669137}
   - component: {fileID: -6035106689733588701}
   - component: {fileID: -183595849526540171}
+  - component: {fileID: 6889982048710134662}
+  - component: {fileID: 2605275890676774290}
   m_Layer: 7
   m_Name: TeschioFuoco
   m_TagString: Mob
@@ -107,7 +109,7 @@ Animator:
   m_GameObject: {fileID: 7058241679132070929}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 97220fe54c8764b4d855ba375b036675, type: 2}
+  m_Controller: {fileID: 9100000, guid: 657a208cdbfa9bb4a842286999c85c2d, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -133,10 +135,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   player: {fileID: 0}
   moveSpeed: 3
-  chaseRange: 5
+  chaseRange: 8
   waypointRange: 3
   waypointReachedDist: 0.3
   repathRate: 0.5
+  obstacleLayerName: Ostacoli
+  patrolPickAttempts: 10
+  patrolObstacleCheckRadius: 0.2
 --- !u!50 &-4625269783513836334
 Rigidbody2D:
   serializedVersion: 5
@@ -251,3 +256,63 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   maxHealth: 100
+  invulnerabilityTime: 0.15
+--- !u!114 &6889982048710134662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7058241679132070929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9872453bdfb6a534db1942ab71a9af40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobAnimatorController
+  walkingBool: Camminando
+  lookXFloat: LookX
+  lookYFloat: LookY
+  hitTrigger: 
+  deathTrigger: Morte
+  startingDirection: {x: 0, y: -1}
+  minMovingSpeedSqr: 0.04
+  hitStunTime: 0.2
+  disableAIDuringStun: 0
+  deathDuration: 0.85
+  destroyExtraDelay: 0.05
+  fadeOutOnDeath: 1
+  hitFlash: 1
+  hitFlashColor: {r: 1, g: 0.45, b: 0.45, a: 1}
+  hitFlashDuration: 0.05
+  hitFlashCount: 2
+  hitShakeAmount: 0.18
+  hitShakeDuration: 0.2
+--- !u!114 &2605275890676774290
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7058241679132070929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31bc4e4433a85b34991b84a074644aaa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobRangedAttack
+  targetTag: Player
+  target: {fileID: 0}
+  attackRange: 7
+  attackCooldown: 2
+  projectilePrefab: {fileID: 5747953974666823154, guid: 37cdf73a62aa6fa4d93b4827ff7064a6, type: 3}
+  projectileSpeed: 7
+  projectileDamage: 8
+  spawnOffset: 1.2
+  attackWindup: 0.2
+  attackRecovery: 0.3
+  requireLineOfSight: 1
+  obstacleLayerName: Ostacoli
+  attackTrigger: Attacco
+  lookXParam: LookX
+  lookYParam: LookY
+  stopMobAIDuringAttack: 0
+  debugLog: 0

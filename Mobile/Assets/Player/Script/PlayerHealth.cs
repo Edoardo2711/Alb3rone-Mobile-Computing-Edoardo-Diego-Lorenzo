@@ -39,7 +39,11 @@ public class PlayerHealth : MonoBehaviour
     private Color[] originalColors;
     private Coroutine flashCo;
     private Coroutine shakeCo;
-    private Vector3 originalLocalPos;
+
+    // Offset attualmente applicato dallo shake. Lo shake e' RELATIVO: ogni frame
+    // annulla l'offset precedente e ne applica uno nuovo, cosi' vibra attorno alla
+    // posizione corrente del player e non attorno a quella di partenza.
+    private Vector3 shakeOffset = Vector3.zero;
 
     void Awake()
     {
@@ -48,7 +52,6 @@ public class PlayerHealth : MonoBehaviour
         originalColors = new Color[spriteRenderers.Length];
         for (int i = 0; i < spriteRenderers.Length; i++)
             originalColors[i] = spriteRenderers[i].color;
-        originalLocalPos = transform.localPosition;
     }
 
     public void TakeDamage(float damage)
@@ -131,23 +134,37 @@ public class PlayerHealth : MonoBehaviour
         float elapsed = 0f;
         while (elapsed < hitShakeDuration)
         {
-            float dx = UnityEngine.Random.Range(-hitShakeAmount, hitShakeAmount);
-            float dy = UnityEngine.Random.Range(-hitShakeAmount, hitShakeAmount);
-            transform.localPosition = originalLocalPos + new Vector3(dx, dy, 0f);
+            // Annulla l'offset del frame precedente PRIMA di applicare il nuovo:
+            // il risultato e' una vibrazione attorno a dove il player si trova ora.
+            transform.position -= shakeOffset;
+            shakeOffset = new Vector3(
+                UnityEngine.Random.Range(-hitShakeAmount, hitShakeAmount),
+                UnityEngine.Random.Range(-hitShakeAmount, hitShakeAmount),
+                0f);
+            transform.position += shakeOffset;
+
             elapsed += Time.deltaTime;
             yield return null;
         }
-        transform.localPosition = originalLocalPos;
+        ClearShakeOffset();
         shakeCo = null;
+    }
+
+    // Rimuove l'offset residuo dello shake senza toccare la posizione "vera".
+    void ClearShakeOffset()
+    {
+        if (shakeOffset == Vector3.zero) return;
+        transform.position -= shakeOffset;
+        shakeOffset = Vector3.zero;
     }
 
     void OnDisable()
     {
-        // Ripristina sprite e posizione se la coroutine viene interrotta
+        // Ripristina sprite e annulla l'eventuale offset se la coroutine viene interrotta
         if (spriteRenderers != null && originalColors != null)
             for (int i = 0; i < spriteRenderers.Length; i++)
                 if (spriteRenderers[i] != null) spriteRenderers[i].color = originalColors[i];
-        transform.localPosition = originalLocalPos;
+        ClearShakeOffset();
     }
 
     public float GetHealthPercent() => Mathf.Clamp01(currentHealth / maxHealth);

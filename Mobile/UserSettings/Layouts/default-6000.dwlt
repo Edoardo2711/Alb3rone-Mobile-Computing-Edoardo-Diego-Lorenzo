@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1920
     height: 989
   m_ShowMode: 4
-  m_Title: Project
+  m_Title: Game
   m_RootView: {fileID: 6}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -327,6 +327,7 @@ MonoBehaviour:
     - {fileID: -8542785999301686468, guid: 324f6210403930d409bdce3707a5e14f, type: 2}
     - {fileID: 2345529237974157172, guid: 324f6210403930d409bdce3707a5e14f, type: 2}
     - {fileID: -8994928279745865140, guid: 3ae15526a652b1241983018a35decb31, type: 2}
+    - {fileID: 2304536544610843270, guid: b3a608aad08673c4bbc8a15b82b36d2b, type: 2}
     m_ValueSerializationHelper:
     - e00: 1
       e01: 0
@@ -432,6 +433,22 @@ MonoBehaviour:
       e11: 0.99690723
       e12: 0
       e13: 76.0567
+      e20: 0
+      e21: 0
+      e22: 1
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    - e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: 1
+      e12: 0
+      e13: 0
       e20: 0
       e21: 0
       e22: 1
@@ -771,7 +788,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Mob/Wraith
+    - Assets/Mob/TeschioFuoco
     m_Globs: []
     m_ProductIds: 
     m_AnyWithAssetOrigin: 0
@@ -781,97 +798,21 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Mob/Wraith
+  - Assets/Mob/TeschioFuoco
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\Users\User\Documents\GitHub\Alb3rone-Mobile-Computing-Edoardo-Diego-Lorenzo\Mobile
   m_LockTracker:
     m_IsLocked: 0
   m_LastLocalAssetsSearchArea: 1
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 317}
+    scrollPos: {x: 0, y: 157}
     m_SelectedIDs:
-    - m_Data: 117846
+    - m_Data: 136002
     m_LastClickedID:
-      m_Data: 117846
+      m_Data: 136002
     m_ExpandedIDs:
     - m_Data: 0
-    - m_Data: 117402
-    - m_Data: 117404
-    - m_Data: 117406
-    - m_Data: 117408
-    - m_Data: 117410
-    - m_Data: 117412
-    - m_Data: 117414
-    - m_Data: 117416
-    - m_Data: 117418
-    - m_Data: 117420
-    - m_Data: 117422
-    - m_Data: 117424
-    - m_Data: 117426
-    - m_Data: 117428
-    - m_Data: 117430
-    - m_Data: 117432
-    - m_Data: 117434
-    - m_Data: 117436
-    - m_Data: 117438
-    - m_Data: 117442
-    - m_Data: 117444
-    - m_Data: 117446
-    - m_Data: 117448
-    - m_Data: 117450
-    - m_Data: 117452
-    - m_Data: 117454
-    - m_Data: 117456
-    - m_Data: 117458
-    - m_Data: 117460
-    - m_Data: 117462
-    - m_Data: 117464
-    - m_Data: 117466
-    - m_Data: 117468
-    - m_Data: 117470
-    - m_Data: 117472
-    - m_Data: 117474
-    - m_Data: 117476
-    - m_Data: 117478
-    - m_Data: 117480
-    - m_Data: 117482
-    - m_Data: 117484
-    - m_Data: 117486
-    - m_Data: 117842
-    - m_Data: 118080
-    - m_Data: 1000000000
-    m_RenameOverlay:
-      m_UserAcceptedRename: 0
-      m_Name: 
-      m_OriginalName: 
-      m_EditFieldRect:
-        serializedVersion: 2
-        x: 0
-        y: 0
-        width: 0
-        height: 0
-      m_UserData:
-        m_Data: 0
-      m_IsWaitingForDelay: 0
-      m_IsRenaming: 0
-      m_OriginalEventType: 11
-      m_IsRenamingFilename: 1
-      m_TrimLeadingAndTrailingWhitespace: 0
-      m_ClientGUIView: {fileID: 5}
-    m_SearchString: 
-    m_CreateAssetUtility:
-      m_EndAction: {fileID: 0}
-      m_InstanceID: 0
-      m_Path: 
-      m_Icon: {fileID: 0}
-      m_ResourceFile: 
-  m_AssetTreeState:
-    scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: []
-    m_LastClickedID:
-      m_Data: 0
-    m_ExpandedIDs:
-    - m_Data: 0
+    - m_Data: 117400
     - m_Data: 117402
     - m_Data: 117404
     - m_Data: 117406
@@ -913,8 +854,81 @@ MonoBehaviour:
     - m_Data: 117478
     - m_Data: 117480
     - m_Data: 117482
-    - m_Data: 117484
-    - m_Data: 117486
+    - m_Data: 1000000000
+    m_RenameOverlay:
+      m_UserAcceptedRename: 0
+      m_Name: 
+      m_OriginalName: 
+      m_EditFieldRect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 0
+        height: 0
+      m_UserData:
+        m_Data: 0
+      m_IsWaitingForDelay: 0
+      m_IsRenaming: 0
+      m_OriginalEventType: 11
+      m_IsRenamingFilename: 1
+      m_TrimLeadingAndTrailingWhitespace: 0
+      m_ClientGUIView: {fileID: 5}
+    m_SearchString: 
+    m_CreateAssetUtility:
+      m_EndAction: {fileID: 0}
+      m_InstanceID: 0
+      m_Path: 
+      m_Icon: {fileID: 0}
+      m_ResourceFile: 
+  m_AssetTreeState:
+    scrollPos: {x: 0, y: 0}
+    m_SelectedIDs: []
+    m_LastClickedID:
+      m_Data: 0
+    m_ExpandedIDs:
+    - m_Data: 0
+    - m_Data: 117400
+    - m_Data: 117402
+    - m_Data: 117404
+    - m_Data: 117406
+    - m_Data: 117408
+    - m_Data: 117410
+    - m_Data: 117412
+    - m_Data: 117414
+    - m_Data: 117416
+    - m_Data: 117418
+    - m_Data: 117420
+    - m_Data: 117422
+    - m_Data: 117424
+    - m_Data: 117426
+    - m_Data: 117428
+    - m_Data: 117430
+    - m_Data: 117432
+    - m_Data: 117434
+    - m_Data: 117436
+    - m_Data: 117438
+    - m_Data: 117440
+    - m_Data: 117442
+    - m_Data: 117444
+    - m_Data: 117446
+    - m_Data: 117448
+    - m_Data: 117450
+    - m_Data: 117452
+    - m_Data: 117454
+    - m_Data: 117456
+    - m_Data: 117458
+    - m_Data: 117460
+    - m_Data: 117462
+    - m_Data: 117464
+    - m_Data: 117466
+    - m_Data: 117468
+    - m_Data: 117470
+    - m_Data: 117472
+    - m_Data: 117474
+    - m_Data: 117476
+    - m_Data: 117478
+    - m_Data: 117480
+    - m_Data: 117482
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -941,9 +955,8 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs:
-    - m_Data: 118724
-    m_LastClickedInstanceID: 118724
+    m_SelectedInstanceIDs: []
+    m_LastClickedInstanceID: 0
     m_HadKeyboardFocusLastEvent: 1
     m_ExpandedInstanceIDs:
     - m_Data: 117648
@@ -952,7 +965,6 @@ MonoBehaviour:
     - m_Data: 117598
     - m_Data: 117654
     - m_Data: 117794
-    - m_Data: 117870
     - m_Data: 118882
     - m_Data: 119558
     - m_Data: 119068
@@ -963,6 +975,7 @@ MonoBehaviour:
     - m_Data: 119186
     - m_Data: 119334
     - m_Data: 122510
+    - m_Data: 116604
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1084,17 +1097,18 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs:
-      - m_Data: 118724
+      m_SelectedIDs: []
       m_LastClickedID:
         m_Data: 0
       m_ExpandedIDs:
-      - m_Data: -1350
-      - m_Data: 106502
+      - m_Data: -1342
+      - m_Data: 106442
+      - m_Data: 106616
+      - m_Data: 106688
       m_RenameOverlay:
         m_UserAcceptedRename: 0
-        m_Name: 
-        m_OriginalName: 
+        m_Name: Fabbro
+        m_OriginalName: Fabbro
         m_EditFieldRect:
           serializedVersion: 2
           x: 0
@@ -1102,10 +1116,10 @@ MonoBehaviour:
           width: 0
           height: 0
         m_UserData:
-          m_Data: 0
+          m_Data: 106536
         m_IsWaitingForDelay: 0
         m_IsRenaming: 0
-        m_OriginalEventType: 11
+        m_OriginalEventType: 0
         m_IsRenamingFilename: 0
         m_TrimLeadingAndTrailingWhitespace: 0
         m_ClientGUIView: {fileID: 4}
@@ -1627,9 +1641,9 @@ MonoBehaviour:
   m_AudioPlay: 0
   m_DebugDrawModesUseInteractiveLightBakingData: 0
   m_Position:
-    m_Target: {x: -37.98517, y: -78.20125, z: -1.7858335}
+    m_Target: {x: -44.710865, y: -78.86876, z: -0.20661555}
     speed: 2
-    m_Value: {x: -37.98517, y: -78.20125, z: -1.7858335}
+    m_Value: {x: -44.710865, y: -78.86876, z: -0.20661555}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1679,9 +1693,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 12.807285
+    m_Target: 23.233799
     speed: 2
-    m_Value: 12.807285
+    m_Value: 23.233799
   m_Ortho:
     m_Target: 1
     speed: 2

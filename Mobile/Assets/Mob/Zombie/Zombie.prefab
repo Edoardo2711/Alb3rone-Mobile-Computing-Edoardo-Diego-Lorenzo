@@ -139,6 +139,9 @@ MonoBehaviour:
   waypointRange: 3
   waypointReachedDist: 0.3
   repathRate: 0.5
+  obstacleLayerName: Ostacoli
+  patrolPickAttempts: 10
+  patrolObstacleCheckRadius: 0.2
 --- !u!114 &480011065217487016
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -152,6 +155,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MobHealth
   maxHealth: 100
+  invulnerabilityTime: 0.15
 --- !u!114 &6439961337344989316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -220,7 +224,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 3
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -298,4 +302,13 @@ MonoBehaviour:
   startingDirection: {x: 0, y: -1}
   minMovingSpeedSqr: 0.04
   hitStunTime: 0.25
+  disableAIDuringStun: 0
   deathDuration: 1.6
+  destroyExtraDelay: 0.05
+  fadeOutOnDeath: 1
+  hitFlash: 1
+  hitFlashColor: {r: 1, g: 0.45, b: 0.45, a: 1}
+  hitFlashDuration: 0.06
+  hitFlashCount: 2
+  hitShakeAmount: 0
+  hitShakeDuration: 0.15

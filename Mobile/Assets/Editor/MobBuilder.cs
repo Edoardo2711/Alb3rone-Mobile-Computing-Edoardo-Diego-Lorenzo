@@ -33,13 +33,17 @@ public static class MobBuilder
     private const string DEFAULT_TEMPLATE_CONTROLLER = "Assets/Mob/Zombie/Animazioni/Zombie.controller";
 
     private static readonly string[] DIRECTIONS = { "Down", "Left", "Right", "Up" };
-    private static readonly (string action, string spriteSubfolder, bool loop)[] ACTIONS =
+
+    // Ogni azione ha il proprio frame rate: un valore unico per tutte appiattiva
+    // i timing (un attacco vuole essere piu' rapido di una morte). I valori sono
+    // quelli usati dalle clip dello Zombie, che fa da template.
+    private static readonly (string action, string spriteSubfolder, bool loop, float fps)[] ACTIONS =
     {
-        ("Idle",   "Idle",    true),
-        ("Walk",   "Walk",    true),
-        ("Attack", "Attacco", false),
-        ("Hit",    "Hit",     false),
-        ("Death",  "Death",   false),
+        ("Idle",   "Idle",    true,   6f),
+        ("Walk",   "Walk",    true,   8f),
+        ("Attack", "Attacco", false, 10f),
+        ("Hit",    "Hit",     false,  8f),
+        ("Death",  "Death",   false,  5f),
     };
 
     // ============================================================
@@ -231,7 +235,7 @@ public static class MobBuilder
 
             Dictionary<string, AnimationClip> createdClips = new Dictionary<string, AnimationClip>();
 
-            foreach (var (action, spriteSubfolder, loop) in ACTIONS)
+            foreach (var (action, spriteSubfolder, loop, fps) in ACTIONS)
             {
                 string actionAnimFolder = $"{animazioniFolder}/{spriteSubfolder}";
                 EnsureFolder(actionAnimFolder);
@@ -259,12 +263,12 @@ public static class MobBuilder
                     string clipName = $"{action}_{dir}";
                     string clipPath = $"{actionAnimFolder}/{clipName}.anim";
 
-                    var clip = CreateAnimationClip(sprites, clipName, loop);
+                    var clip = CreateAnimationClip(sprites, clipName, loop, fps);
                     if (File.Exists(clipPath)) AssetDatabase.DeleteAsset(clipPath);
                     AssetDatabase.CreateAsset(clip, clipPath);
                     createdClips[clipName] = clip;
 
-                    Debug.Log($"[MobBuilder]  + animazione {clipPath} ({sprites.Length} frame)");
+                    Debug.Log($"[MobBuilder]  + animazione {clipPath} ({sprites.Length} frame @ {fps}fps, loop={loop})");
                 }
             }
 
@@ -351,9 +355,9 @@ public static class MobBuilder
     //   HELPERS
     // ============================================================
 
-    static AnimationClip CreateAnimationClip(Sprite[] sprites, string name, bool loop)
+    static AnimationClip CreateAnimationClip(Sprite[] sprites, string name, bool loop, float fps)
     {
-        var clip = new AnimationClip { name = name, frameRate = 6f };
+        var clip = new AnimationClip { name = name, frameRate = Mathf.Max(1f, fps) };
 
         var binding = new EditorCurveBinding
         {

@@ -27,15 +27,44 @@ public class MobAnimatorController : MonoBehaviour
     [Tooltip("Se true, lo sprite scompare gradualmente in fade-out durante deathDuration.")]
     public bool fadeOutOnDeath = true;
 
+    [Header("Feedback colpo subito")]
+    [Tooltip("Lampeggio di colore quando il mob subisce danno. Utile soprattutto sui mob privi di animazione di 'colpo subito'.")]
+    public bool hitFlash = true;
+    public Color hitFlashColor = new Color(1f, 0.45f, 0.45f, 1f);
+    [Tooltip("Durata di ogni mezzo lampeggio (sec).")]
+    public float hitFlashDuration = 0.06f;
+    [Tooltip("Numero di lampeggi.")]
+    public int hitFlashCount = 2;
+
+    [Tooltip("Ampiezza della vibrazione quando il mob subisce danno, in unita' di mondo. 0 per disabilitarla.")]
+    public float hitShakeAmount = 0f;
+    [Tooltip("Durata della vibrazione (sec).")]
+    public float hitShakeDuration = 0.15f;
+
     private Animator    animator;
     private MobAI       mobAI;
     private MobHealth   mobHealth;
     private Rigidbody2D rb;
-    private MobAttack   mobAttack;
+    private IMobAttack  mobAttack;   // MobAttack (corpo a corpo) o MobRangedAttack (a distanza)
 
     private bool    isDead    = false;
     private bool    isStunned = false;
     private Vector2 lastDirection;
+
+    // MobAI muove il rigidbody con MovePosition, quindi rb.linearVelocity non
+    // rispecchia lo spostamento reale: ce lo misuriamo dal delta di posizione.
+    private Vector2 lastPosition;
+    private Vector2 measuredVelocity;
+
+    // Feedback di danno
+    private SpriteRenderer[] sprites;
+    private Color[]  spriteBaseColors;
+    private Coroutine flashCo;
+    private Coroutine shakeCo;
+    // Offset attualmente applicato dalla vibrazione: e' RELATIVO (ogni frame si
+    // annulla il precedente) e va sottratto dalla misura della velocita', altrimenti
+    // un mob fermo che vibra sembrerebbe in movimento.
+    private Vector3 shakeOffset = Vector3.zero;
 
     void Awake()
     {
@@ -43,8 +72,13 @@ public class MobAnimatorController : MonoBehaviour
         mobAI      = GetComponent<MobAI>();
         mobHealth  = GetComponent<MobHealth>();
         rb         = GetComponent<Rigidbody2D>();
-        mobAttack  = GetComponent<MobAttack>();
+        mobAttack  = GetComponent<IMobAttack>();
         lastDirection = startingDirection;
+        lastPosition  = rb.position;
+
+        sprites = GetComponentsInChildren<SpriteRenderer>(true);
+        spriteBaseColors = new Color[sprites.Length];
+        for (int i = 0; i < sprites.Length; i++) spriteBaseColors[i] = sprites[i].color;
     }
 
     void Start()
@@ -61,6 +95,17 @@ public class MobAnimatorController : MonoBehaviour
             mobHealth.OnHit   -= HandleHit;
             mobHealth.OnDeath -= HandleDeath;
         }
+    }
+
+    void FixedUpdate()
+    {
+        if (isDead) return;
+
+        // Sottrai la vibrazione: e' un effetto visivo, non movimento reale
+        Vector2 now = rb.position - (Vector2)shakeOffset;
+        float dt = Time.fixedDeltaTime;
+        measuredVelocity = (dt > 0f) ? (now - lastPosition) / dt : Vector2.zero;
+        lastPosition = now;
     }
 
     void Update()
@@ -80,7 +125,7 @@ public class MobAnimatorController : MonoBehaviour
             return;
         }
 
-        Vector2 vel = rb.linearVelocity;
+        Vector2 vel = measuredVelocity;
         bool moving = vel.sqrMagnitude > minMovingSpeedSqr;
 
         if (!string.IsNullOrEmpty(walkingBool))
@@ -106,6 +151,70 @@ public class MobAnimatorController : MonoBehaviour
         if (!string.IsNullOrEmpty(hitTrigger))
             animator.SetTrigger(hitTrigger);
         StartCoroutine(HitStun());
+
+        if (hitFlash && sprites.Length > 0)
+        {
+            if (flashCo != null) StopCoroutine(flashCo);
+            flashCo = StartCoroutine(HitFlash());
+        }
+
+        if (hitShakeAmount > 0f)
+        {
+            if (shakeCo != null) StopCoroutine(shakeCo);
+            shakeCo = StartCoroutine(HitShake());
+        }
+    }
+
+    IEnumerator HitFlash()
+    {
+        for (int n = 0; n < Mathf.Max(1, hitFlashCount); n++)
+        {
+            SetSpriteColor(hitFlashColor);
+            yield return new WaitForSeconds(hitFlashDuration);
+            RestoreSpriteColors();
+            yield return new WaitForSeconds(hitFlashDuration);
+        }
+        flashCo = null;
+    }
+
+    // Vibrazione RELATIVA: ogni frame annulla l'offset precedente e ne applica uno
+    // nuovo, cosi' segue il mob mentre si muove invece di riportarlo indietro.
+    IEnumerator HitShake()
+    {
+        float elapsed = 0f;
+        while (elapsed < hitShakeDuration)
+        {
+            transform.position -= shakeOffset;
+            shakeOffset = new Vector3(
+                Random.Range(-hitShakeAmount, hitShakeAmount),
+                Random.Range(-hitShakeAmount, hitShakeAmount),
+                0f);
+            transform.position += shakeOffset;
+
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        ClearShakeOffset();
+        shakeCo = null;
+    }
+
+    void ClearShakeOffset()
+    {
+        if (shakeOffset == Vector3.zero) return;
+        transform.position -= shakeOffset;
+        shakeOffset = Vector3.zero;
+    }
+
+    void SetSpriteColor(Color c)
+    {
+        for (int i = 0; i < sprites.Length; i++)
+            if (sprites[i] != null) sprites[i].color = c;
+    }
+
+    void RestoreSpriteColors()
+    {
+        for (int i = 0; i < sprites.Length; i++)
+            if (sprites[i] != null) sprites[i].color = spriteBaseColors[i];
     }
 
     IEnumerator HitStun()
@@ -125,13 +234,23 @@ public class MobAnimatorController : MonoBehaviour
         if (isDead) return;
         isDead = true;
         StopAllCoroutines();
+
+        // StopAllCoroutines interrompe flash e vibrazione a meta': ripulisci a mano,
+        // altrimenti il mob resta tinto e spostato e il fade-out partirebbe dal
+        // colore del lampeggio invece che da quello originale.
+        flashCo = null;
+        shakeCo = null;
+        ClearShakeOffset();
+        RestoreSpriteColors();
+
         if (!string.IsNullOrEmpty(deathTrigger))
             animator.SetTrigger(deathTrigger);
         rb.linearVelocity = Vector2.zero;
         rb.bodyType = RigidbodyType2D.Kinematic;
         if (TryGetComponent(out Collider2D col)) col.enabled = false;
         if (mobAI != null) mobAI.enabled = false;
-        if (mobAttack != null) mobAttack.enabled = false;
+        var attackBehaviour = mobAttack as MonoBehaviour;
+        if (attackBehaviour != null) attackBehaviour.enabled = false;
 
         StartCoroutine(DeathRoutine());
     }

@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class MobAttack : MonoBehaviour
+public class MobAttack : MonoBehaviour, IMobAttack
 {
     [Header("Target")]
     public string targetTag = "Player";
