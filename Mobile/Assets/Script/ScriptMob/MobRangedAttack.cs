@@ -13,6 +13,14 @@ public class MobRangedAttack : MonoBehaviour, IMobAttack
     public string targetTag = "Player";
     public Transform target;
 
+    [Header("Mira")]
+    [Tooltip("Mira al centro del collider del bersaglio invece che all'origine del suo transform. " +
+             "Serve perche' il collider del Player e' offsettato in basso di ~1,7 unita': mirando " +
+             "all'origine il proiettile gli passa sopra la testa senza toccarlo.")]
+    public bool aimAtCollider = true;
+    [Tooltip("Correzione manuale del punto di mira, in unita' di mondo. Sommata al punto calcolato.")]
+    public Vector2 aimOffset = Vector2.zero;
+
     [Header("Combattimento")]
     [Tooltip("Raggio di tiro. Tienilo >= chaseRange di MobAI, altrimenti il mob spara senza inseguire.")]
     public float attackRange = 7f;
@@ -59,11 +67,18 @@ public class MobRangedAttack : MonoBehaviour, IMobAttack
     private float nextAttackTime = 0f;
     private Coroutine attackCo;
 
+    // Collider da cui si ricavano punto di mira e punto di tiro. Sono cache: risolverli
+    // a ogni frame costerebbe una GetComponentsInChildren per fotogramma.
+    private Collider2D ownCollider;
+    private Collider2D targetCollider;
+    private Transform  targetColliderOwner;
+
     void Awake()
     {
         animator  = GetComponent<Animator>();
         mobAI     = GetComponent<MobAI>();
         mobHealth = GetComponent<MobHealth>();
+        ownCollider = FindSolidCollider(transform);
     }
 
     void Start()
@@ -101,7 +116,9 @@ public class MobRangedAttack : MonoBehaviour, IMobAttack
 
         Transform t = GetTarget();
         if (t == null) return;
-        if (Vector2.Distance(transform.position, t.position) > attackRange) return;
+        // Distanza e linea di tiro misurate sugli stessi punti a cui poi si spara,
+        // altrimenti il mob potrebbe considerarsi in raggio su un punto e mirarne un altro.
+        if (Vector2.Distance(FirePoint(), AimPoint(t)) > attackRange) return;
         if (!HasLineOfSight(t)) return;
 
         nextAttackTime = Time.time + Mathf.Max(attackCooldown, 0.05f);
@@ -132,16 +149,57 @@ public class MobRangedAttack : MonoBehaviour, IMobAttack
     bool HasLineOfSight(Transform t)
     {
         if (!requireLineOfSight || obstacleMask.value == 0) return true;
-        Vector2 from = transform.position;
-        Vector2 to   = t.position;
-        return Physics2D.Linecast(from, to, obstacleMask).collider == null;
+        return Physics2D.Linecast(FirePoint(), AimPoint(t), obstacleMask).collider == null;
+    }
+
+    /// <summary>
+    /// Punto a cui il mob mira: il centro del collider del bersaglio, non l'origine del
+    /// suo transform. Sul Player le due cose distano ~1,7 unita' (il collider e' ai piedi),
+    /// abbastanza perche' un proiettile di raggio 0,5 gli passi sopra la testa.
+    /// </summary>
+    Vector2 AimPoint(Transform t)
+    {
+        if (t == null) return transform.position;
+
+        if (aimAtCollider)
+        {
+            if (targetCollider == null || targetColliderOwner != t)
+            {
+                targetCollider = FindSolidCollider(t);
+                targetColliderOwner = t;
+            }
+            if (targetCollider != null && targetCollider.enabled)
+                return (Vector2)targetCollider.bounds.center + aimOffset;
+        }
+
+        return (Vector2)t.position + aimOffset;
+    }
+
+    /// <summary>Punto da cui parte il tiro: centro del collider del mob, se ne ha uno.</summary>
+    Vector2 FirePoint()
+    {
+        if (ownCollider != null && ownCollider.enabled)
+            return ownCollider.bounds.center;
+        return transform.position;
+    }
+
+    /// <summary>
+    /// Primo collider non-trigger attivo sull'oggetto o sui suoi figli. I trigger sono
+    /// esclusi apposta: Fireball li ignora, quindi mirarci non farebbe mai danno.
+    /// </summary>
+    static Collider2D FindSolidCollider(Transform root)
+    {
+        var cols = root.GetComponentsInChildren<Collider2D>();
+        for (int i = 0; i < cols.Length; i++)
+            if (cols[i] != null && cols[i].enabled && !cols[i].isTrigger) return cols[i];
+        return null;
     }
 
     IEnumerator DoAttack(Transform t)
     {
         IsAttacking = true;
 
-        Vector2 dir = ((Vector2)t.position - (Vector2)transform.position).normalized;
+        Vector2 dir = (AimPoint(t) - FirePoint()).normalized;
         SetLookDirection(dir);
 
         if (stopMobAIDuringAttack && mobAI != null) mobAI.enabled = false;
@@ -154,7 +212,7 @@ public class MobRangedAttack : MonoBehaviour, IMobAttack
         // Rimira al momento del tiro: il bersaglio si e' mosso durante il windup
         if (IsAlive && t != null)
         {
-            dir = ((Vector2)t.position - (Vector2)transform.position).normalized;
+            dir = (AimPoint(t) - FirePoint()).normalized;
             SetLookDirection(dir);
             Fire(dir);
         }
@@ -168,7 +226,10 @@ public class MobRangedAttack : MonoBehaviour, IMobAttack
 
     void Fire(Vector2 dir)
     {
-        Vector3 spawnPos = transform.position + (Vector3)(dir * spawnOffset);
+        // La z viene presa dal mob e non dai bounds del collider: Collider2D.bounds e'
+        // un volume 2D e la sua z non e' un riferimento affidabile per l'ordinamento.
+        Vector2 origin = FirePoint() + dir * spawnOffset;
+        Vector3 spawnPos = new Vector3(origin.x, origin.y, transform.position.z);
         GameObject go = Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
 
         Fireball fb = go.GetComponent<Fireball>();
@@ -208,7 +269,20 @@ public class MobRangedAttack : MonoBehaviour, IMobAttack
 
     void OnDrawGizmosSelected()
     {
+        Vector2 from = FirePoint();
+
         Gizmos.color = new Color(1f, 0.5f, 0f);
-        Gizmos.DrawWireSphere(transform.position, attackRange);
+        Gizmos.DrawWireSphere(from, attackRange);
+
+        // Linea di tiro effettiva: serve a vedere a occhio se la mira cade sul collider
+        // del bersaglio o gli passa sopra, ed eventualmente a tarare aimOffset.
+        Transform t = target;
+        if (t == null && mobAI != null) t = mobAI.player;
+        if (t == null) return;
+
+        Vector2 to = AimPoint(t);
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawLine(from, to);
+        Gizmos.DrawWireSphere(to, 0.25f);
     }
 }

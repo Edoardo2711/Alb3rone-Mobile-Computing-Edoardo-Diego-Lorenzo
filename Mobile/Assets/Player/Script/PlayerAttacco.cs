@@ -21,10 +21,12 @@ public class PlayerAttacco : MonoBehaviour
 
     private float nextAttackTime = 0f;
     private MovementPlayer movementPlayer;
+    private PlayerHealth health;
 
     void Start()
     {
         movementPlayer = GetComponent<MovementPlayer>();
+        health = GetComponent<PlayerHealth>();
         if (animator == null) animator = GetComponent<Animator>();
     }
 
@@ -38,6 +40,9 @@ public class PlayerAttacco : MonoBehaviour
 
     private void TryAttack()
     {
+        // Da morto non si attacca. Serve anche se questo componente e' disabilitato:
+        // PlayerInput invoca gli UnityEvent sul target a prescindere dal suo enabled.
+        if (health != null && health.IsDead) return;
         if (Time.time < nextAttackTime) return;
         if (attackPoint == null)
         {

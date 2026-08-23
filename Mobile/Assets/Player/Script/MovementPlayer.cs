@@ -21,6 +21,7 @@ public class MovementPlayer : MonoBehaviour
 
     private Rigidbody2D rb;
     private Animator animator;
+    private PlayerHealth health;
     private Vector2 moveInput;
     private Vector2 lastNonZeroDirection = Vector2.down;
 
@@ -28,6 +29,7 @@ public class MovementPlayer : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        health = GetComponent<PlayerHealth>();
         if (animator == null)
             Debug.LogWarning("[MovementPlayer] Animator mancante su " + name);
 
@@ -69,6 +71,15 @@ public class MovementPlayer : MonoBehaviour
 
     public void Move(InputAction.CallbackContext context)
     {
+        // Da morto l'input non deve piu' arrivare all'Animator: Update() e' gia' fermo
+        // perche' il componente viene disabilitato, ma PlayerInput continua a invocare
+        // questo metodo e senza la guardia il cadavere resterebbe in animazione di corsa.
+        if (health != null && health.IsDead)
+        {
+            moveInput = Vector2.zero;
+            return;
+        }
+
         Vector2 raw = context.ReadValue<Vector2>();
 
         // Deadzone difensiva: ignora input sotto soglia (stick drift dei gamepad)
