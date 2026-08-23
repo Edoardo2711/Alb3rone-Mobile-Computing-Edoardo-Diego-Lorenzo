@@ -4,12 +4,12 @@
 # Forza l'uso di LF (Linux style) per gli script e i file di configurazione di Unity
 # Questo evita conflitti inutili tra diversi sistemi operativi
 *.cs text eol=lf
-*.unity text eol=lf
-*.asset text eol=lf
-*.prefab text eol=lf
-*.mat text eol=lf
+*.unity text eol=lf merge=unityyamlmerge
+*.asset text eol=lf merge=unityyamlmerge
+*.prefab text eol=lf merge=unityyamlmerge
+*.mat text eol=lf merge=unityyamlmerge
 *.meta text eol=lf
-*.controller text eol=lf
+*.controller text eol=lf merge=unityyamlmerge
 *.csproj text eol=lf
 *.sln text eol=lf
 
@@ -25,3 +25,6 @@
 *.fbx binary
 *.obj binary
 *.zip binary
+# I file YAML di Unity vengono fusi da UnityYAMLMerge, che ragiona per
+# oggetti invece che per righe. Ogni sviluppatore deve registrare il driver
+# una volta sola in locale (vedi README): senza, git usa il merge testuale.

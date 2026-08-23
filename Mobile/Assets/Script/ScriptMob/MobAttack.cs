@@ -46,6 +46,9 @@ public class MobAttack : MonoBehaviour, IMobAttack
         rb        = GetComponent<Rigidbody2D>();
         mobAI     = GetComponent<MobAI>();
         mobHealth = GetComponent<MobHealth>();
+
+        // Danno da mischia scalato dalla difficolta' scelta nel menu.
+        attackDamage *= Difficulty.Multiplier;
     }
 
     void Start()

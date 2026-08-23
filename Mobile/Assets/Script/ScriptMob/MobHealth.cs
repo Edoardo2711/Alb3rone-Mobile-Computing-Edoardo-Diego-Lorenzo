@@ -22,6 +22,8 @@ public class MobHealth : MonoBehaviour
 
     void Awake()
     {
+        // La difficolta' scala la vita massima prima che venga riempita.
+        maxHealth *= Difficulty.Multiplier;
         currentHealth = maxHealth;
     }
 
