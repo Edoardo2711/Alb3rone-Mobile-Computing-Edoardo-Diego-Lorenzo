@@ -287,3 +287,17 @@
 [2026-08-23T17:41:42.658Z] [INFO] log Unity client requested immediate shutdown - shutting down now, reason: Shutdown requested by client
 [2026-08-23T17:41:42.657Z] [INFO] log Shutdown request received from client editor-49228-f93vwg
 [2026-08-23T17:41:42.660Z] [INFO] log Shutdown: Initiating graceful shutdown: Shutdown requested by client
+[2026-08-23T19:09:58.462Z] [INFO] relay.startup port=9001 mcpClientPort=9002 editorPid=38292
+[2026-08-23T19:09:58.463Z] [INFO] log === RELAY SERVER STARTED === (unity-ai-relay v1.0.12-build.97)
+[2026-08-23T19:09:58.464Z] [INFO] log Starting relay server...
+[2026-08-23T19:09:58.464Z] [INFO] log Command line arguments: ["bun","B:/~BUN/root/relay_win.exe","--relay","--port","9001","--mcp-client-port","9002","--editor-pid","38292","--shutdown-delay","180","--log-dir","C:\\Users\\User\\Documents\\GitHub\\Alb3rone-Mobile-Computing-Edoardo-Diego-Lorenzo\\Mobile\\Logs"]
+[2026-08-23T19:09:58.464Z] [INFO] log Parsed config: {"port":9001,"mcpClientPort":9002,"editorPid":"38292","shutdownDelaySeconds":180}
+[2026-08-23T19:09:58.465Z] [INFO] log Initializing relay components...
+[2026-08-23T19:09:58.466Z] [INFO] log Creating RelayEditor...
+[2026-08-23T19:09:58.475Z] [INFO] log WebSocket server started
+[2026-08-23T19:09:58.475Z] [INFO] log Relay server initialization completed
+[2026-08-23T19:09:58.476Z] [INFO] log MCP Client initialized at port: 9002
+[2026-08-23T19:09:58.483Z] [WARN] log [shell-env] Shell environment did not contain a PATH variable
+[2026-08-23T19:09:58.493Z] [INFO] log Unity MCP Relay server started | Port: 9002 | Endpoints: /mcp/start-server, /mcp/stop-server, /mcp/server-status, /mcp/call-tool
+[2026-08-23T19:09:59.003Z] [INFO] log Unity client connected with ID: editor-38292-x0egz2 (relay 1.0.12-build.97)
+[2026-08-23T19:09:59.004Z] [INFO] connection.established clientId=editor-38292-x0egz2 port=9001
