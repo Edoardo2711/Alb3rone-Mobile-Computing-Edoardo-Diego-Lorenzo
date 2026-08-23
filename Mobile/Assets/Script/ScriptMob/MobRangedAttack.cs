@@ -79,6 +79,9 @@ public class MobRangedAttack : MonoBehaviour, IMobAttack
         mobAI     = GetComponent<MobAI>();
         mobHealth = GetComponent<MobHealth>();
         ownCollider = FindSolidCollider(transform);
+
+        // Danno dei proiettili scalato dalla difficolta' scelta nel menu.
+        projectileDamage *= Difficulty.Multiplier;
     }
 
     void Start()

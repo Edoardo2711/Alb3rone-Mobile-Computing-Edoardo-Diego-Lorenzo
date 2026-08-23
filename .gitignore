@@ -100,3 +100,6 @@ InitTestScene*.unity*
 
 # Note di revisione locali (non condivise)
 /REVISIONE.md
+
+# Preferenze locali dell'editor Unity (per macchina, non condivise)
+Mobile/UserSettings/
