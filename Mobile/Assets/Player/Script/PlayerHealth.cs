@@ -15,8 +15,8 @@ public class PlayerHealth : MonoBehaviour
     private float lastDamageTime = -999f;
 
     [Header("Animator")]
-    [Tooltip("Trigger dell'animazione di morte (lasciare vuoto per disabilitare).")]
-    public string deathTrigger = "Morte";
+    [Tooltip("Trigger dell'animazione di morte. Lasciare vuoto se il controller non ha uno stato di morte.")]
+    public string deathTrigger = "";
 
     [Header("Feedback visivo Hit")]
     [Tooltip("Colore del flash quando si subisce danno.")]
@@ -91,7 +91,11 @@ public class PlayerHealth : MonoBehaviour
     {
         currentHealth = 0f;
         Debug.Log("[PlayerHealth] Player morto!");
-        OnDeath?.Invoke();
+
+        // Interrompe flash e shake in corso e ne annulla gli effetti residui: senza
+        // questo il player resterebbe tinto di rosso e spostato dall'offset dell'ultimo
+        // frame, perche' StopCoroutine non ripulisce cio' che la coroutine ha gia' scritto.
+        StopFeedback();
 
         // Disattiva movimento e attacco
         var mv  = GetComponent<MovementPlayer>();
@@ -103,13 +107,63 @@ public class PlayerHealth : MonoBehaviour
         var rb = GetComponent<Rigidbody2D>();
         if (rb != null) rb.linearVelocity = Vector2.zero;
 
-        // Trigger animazione di morte se presente
+        // Trigger animazione di morte, se il controller ce l'ha davvero.
+        // Nota: Animator.SetTrigger su un parametro inesistente NON lancia eccezioni,
+        // logga un errore in console. Va quindi verificata prima l'esistenza.
         var anim = GetComponent<Animator>();
-        if (anim != null && !string.IsNullOrEmpty(deathTrigger))
+        if (anim != null && HasParameter(anim, deathTrigger))
+            anim.SetTrigger(deathTrigger);
+
+        // Invocato per ultimo, cosi' chi ascolta (GameOverUI) trova il player gia' in
+        // uno stato coerente: fermo, senza feedback in corso, con i controlli spenti.
+        OnDeath?.Invoke();
+    }
+
+    /// <summary>
+    /// Riporta il player in vita: vita piena, feedback ripulito, controlli riabilitati.
+    /// NON lo sposta: del riposizionamento si occupa PlayerRespawn.
+    /// </summary>
+    public void Revive()
+    {
+        StopFeedback();
+
+        currentHealth = maxHealth;
+        lastDamageTime = -999f;
+
+        var anim = GetComponent<Animator>();
+        if (anim != null)
         {
-            try { anim.SetTrigger(deathTrigger); }
-            catch { /* parametro mancante: ignora */ }
+            if (HasParameter(anim, deathTrigger)) anim.ResetTrigger(deathTrigger);
+            if (HasParameter(anim, "Camminando")) anim.SetBool("Camminando", false);
         }
+
+        var mv  = GetComponent<MovementPlayer>();
+        var atk = GetComponent<PlayerAttacco>();
+        if (mv  != null) mv.enabled  = true;
+        if (atk != null) atk.enabled = true;
+
+        var rb = GetComponent<Rigidbody2D>();
+        if (rb != null) rb.linearVelocity = Vector2.zero;
+
+        Debug.Log("[PlayerHealth] Player rianimato.");
+    }
+
+    // Ferma flash e shake e ne annulla gli effetti residui.
+    private void StopFeedback()
+    {
+        if (flashCo != null) { StopCoroutine(flashCo); flashCo = null; }
+        if (shakeCo != null) { StopCoroutine(shakeCo); shakeCo = null; }
+        RestoreColors();
+        ClearShakeOffset();
+    }
+
+    private static bool HasParameter(Animator anim, string parameterName)
+    {
+        if (anim == null || string.IsNullOrEmpty(parameterName)) return false;
+        var pars = anim.parameters;
+        for (int i = 0; i < pars.Length; i++)
+            if (pars[i].name == parameterName) return true;
+        return false;
     }
 
     IEnumerator FlashCoroutine()
@@ -122,8 +176,7 @@ public class PlayerHealth : MonoBehaviour
             yield return new WaitForSeconds(hitFlashDuration);
 
             // OFF: torna al colore originale
-            for (int i = 0; i < spriteRenderers.Length; i++)
-                if (spriteRenderers[i] != null) spriteRenderers[i].color = originalColors[i];
+            RestoreColors();
             yield return new WaitForSeconds(hitFlashDuration);
         }
         flashCo = null;
@@ -150,6 +203,14 @@ public class PlayerHealth : MonoBehaviour
         shakeCo = null;
     }
 
+    // Riporta tutti gli sprite ai colori catturati in Awake.
+    void RestoreColors()
+    {
+        if (spriteRenderers == null || originalColors == null) return;
+        for (int i = 0; i < spriteRenderers.Length; i++)
+            if (spriteRenderers[i] != null) spriteRenderers[i].color = originalColors[i];
+    }
+
     // Rimuove l'offset residuo dello shake senza toccare la posizione "vera".
     void ClearShakeOffset()
     {
@@ -161,9 +222,7 @@ public class PlayerHealth : MonoBehaviour
     void OnDisable()
     {
         // Ripristina sprite e annulla l'eventuale offset se la coroutine viene interrotta
-        if (spriteRenderers != null && originalColors != null)
-            for (int i = 0; i < spriteRenderers.Length; i++)
-                if (spriteRenderers[i] != null) spriteRenderers[i].color = originalColors[i];
+        RestoreColors();
         ClearShakeOffset();
     }
 
