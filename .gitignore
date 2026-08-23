@@ -101,5 +101,8 @@ InitTestScene*.unity*
 # Note di revisione locali (non condivise)
 /REVISIONE.md
 
+# Immagini di gioco per referenza
+/ImmaginiReferenza
+
 # Preferenze locali dell'editor Unity (per macchina, non condivise)
 Mobile/UserSettings/
