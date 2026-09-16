@@ -23,18 +23,10 @@ public class MainMenuManager : MonoBehaviour
             paginaSettings.SetActive(false);
         }
 
-        // 2. Controlla se esiste un salvataggio per attivare/disattivare "Continua"
+        // 2. "Continua" e' cliccabile solo se esiste davvero un file di salvataggio
         if (bottoneContinua != null)
         {
-            // Usiamo una chiave finta chiamata "Salvataggio" per capire se c'è una partita
-            if (PlayerPrefs.HasKey("Salvataggio"))
-            {
-                bottoneContinua.interactable = true;  // C'è un salvataggio, bottone cliccabile
-            }
-            else
-            {
-                bottoneContinua.interactable = false; // Nessun salvataggio, bottone grigio
-            }
+            bottoneContinua.interactable = SaveController.HasSave;
         }
     }
 
@@ -58,15 +50,11 @@ public class MainMenuManager : MonoBehaviour
     {
         Debug.Log("Iniziando una Nuova Partita...");
 
-        // Se inizi una nuova partita, cancelli i vecchi salvataggi!
-        // (Rimuovi PlayerPrefs.DeleteAll() se vuoi gestire i salvataggi in modo diverso)
-        PlayerPrefs.DeleteAll();
+        // La scena parte da zero. Il vecchio salvataggio resta su disco finche'
+        // il giocatore non salva di nuovo, e le impostazioni (difficolta', volume)
+        // non vengono toccate.
+        SaveController.LoadOnNextStart = false;
 
-        // Crea una chiave per dire al gioco: "Ehi, ora esiste una partita!"
-        PlayerPrefs.SetInt("Salvataggio", 1);
-        PlayerPrefs.Save();
-
-        // Carica la scena
         SceneManager.LoadScene(nomeScenaGioco);
     }
 
@@ -74,9 +62,10 @@ public class MainMenuManager : MonoBehaviour
     {
         Debug.Log("Caricamento partita salvata...");
 
-        if (PlayerPrefs.HasKey("Salvataggio"))
+        if (SaveController.HasSave)
         {
-            // Carica la scena. Sarà poi il Player (nella nuova scena) a ricaricare la sua posizione
+            // Sara' SaveController, all'avvio della scena, a ricaricare la partita
+            SaveController.LoadOnNextStart = true;
             SceneManager.LoadScene(nomeScenaGioco);
         }
     }
