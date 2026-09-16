@@ -32,7 +32,8 @@
         foreach (Transform slotTransform in inventoryPanel.transform)
         {
             Slot slot = slotTransform.GetComponent<Slot>();
-            if(slot.currentItem != null)
+            // Un figlio senza Slot (es. un oggetto lasciato fuori dagli slot) non va salvato
+            if(slot != null && slot.currentItem != null)
             {
                 Item item = slot.currentItem.GetComponent<Item>();
                 invData.Add(new InventorySaveData{itemID = item.ID, slotIndex = slotTransform.GetSiblingIndex()});
@@ -43,9 +44,15 @@
     public void SetInventoryItems(List<InventorySaveData> inventorySaveData)
 {
     //Clear inventory panel - avoid duplicates
-    foreach(Transform child in inventoryPanel.transform)
+    // Destroy() agisce solo a fine frame: senza staccarli, i vecchi slot restano figli
+    // del pannello e GetChild() qui sotto ci metterebbe dentro gli oggetti caricati,
+    // che sparirebbero insieme a loro. Si scorre al contrario perche' si stacca mentre si itera.
+    for(int i = inventoryPanel.transform.childCount - 1; i >= 0; i--)
     {
-        Destroy(child.gameObject);
+        GameObject child = inventoryPanel.transform.GetChild(i).gameObject;
+        child.SetActive(false);
+        child.transform.SetParent(null, false);
+        Destroy(child);
     }
 
     //Create new slots
