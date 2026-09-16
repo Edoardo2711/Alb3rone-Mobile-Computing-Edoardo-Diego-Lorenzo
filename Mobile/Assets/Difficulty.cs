@@ -14,9 +14,7 @@ public static class Difficulty
     /// <summary>Moltiplicatore di vita e danni dei mob, uno per livello.</summary>
     static readonly float[] multipliers = { 1f, 1.25f, 1.5f };
 
-    // Copia in memoria del livello. Serve perche' MainMenuManager.NewGame() chiama
-    // PlayerPrefs.DeleteAll(): senza questa cache la difficolta' appena scelta
-    // verrebbe cancellata proprio nel momento in cui si avvia la partita.
+    // Copia in memoria del livello, per non rileggere PlayerPrefs a ogni accesso.
     static int? cached;
 
     public static int LevelCount => multipliers.Length;

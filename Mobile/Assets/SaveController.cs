@@ -7,15 +7,28 @@ using System.Collections;
 [System.Serializable]
 public class SaveController : MonoBehaviour
 {
+    public static string SavePath => Path.Combine(Application.persistentDataPath, "saveData.json");
+
+    public static bool HasSave => File.Exists(SavePath);
+
+    // Lo imposta il menu con "Continua" e lo consuma Start(): senza, anche
+    // "Nuova Partita" ricaricherebbe il salvataggio. Statico perche' deve
+    // sopravvivere al cambio di scena.
+    public static bool LoadOnNextStart;
+
     private string saveLocation;
     private InventoryController inventoryController;
 
     void Start()
     {
-        saveLocation = Path.Combine(Application.persistentDataPath, "saveData.json");
+        saveLocation = SavePath;
         inventoryController = FindObjectOfType<InventoryController>();
 
-        LoadGame();
+        if (LoadOnNextStart)
+        {
+            LoadOnNextStart = false;
+            LoadGame();
+        }
     }
 
     public void SaveGame()
