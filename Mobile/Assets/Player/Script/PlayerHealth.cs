@@ -32,6 +32,9 @@ public class PlayerHealth : MonoBehaviour
 
     public event Action OnHit;
     public event Action OnDeath;
+
+    /// <summary>Scatta a ogni variazione della vita, danno e cura comprese. La usa la barra nell'HUD.</summary>
+    public event Action OnVitaCambiata;
     public bool IsDead => currentHealth <= 0f;
 
     // Cache di tutti gli SpriteRenderer figli per il flash
@@ -54,6 +57,13 @@ public class PlayerHealth : MonoBehaviour
             originalColors[i] = spriteRenderers[i].color;
     }
 
+    void Start()
+    {
+        // La barra si aggancia in OnEnable, che gira prima di questo Awake se l'HUD e'
+        // piu' in alto nella gerarchia: un colpo qui la mette d'accordo col valore vero.
+        OnVitaCambiata?.Invoke();
+    }
+
     public void TakeDamage(float damage)
     {
         if (IsDead) return;
@@ -62,6 +72,7 @@ public class PlayerHealth : MonoBehaviour
 
         currentHealth -= damage;
         Debug.Log($"[PlayerHealth] Danno subito: {damage}. Vita: {currentHealth}/{maxHealth}");
+        OnVitaCambiata?.Invoke();
 
         if (currentHealth <= 0f)
         {
@@ -85,11 +96,16 @@ public class PlayerHealth : MonoBehaviour
     {
         if (IsDead) return;
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+        OnVitaCambiata?.Invoke();
     }
+
+    /// <summary>Quanta vita manca al massimo. Serve a non sprecare una pozione da pieni.</summary>
+    public bool VitaPiena => currentHealth >= maxHealth;
 
     void Die()
     {
         currentHealth = 0f;
+        OnVitaCambiata?.Invoke();
         Debug.Log("[PlayerHealth] Player morto!");
 
         // Interrompe flash e shake in corso e ne annulla gli effetti residui: senza
@@ -129,6 +145,7 @@ public class PlayerHealth : MonoBehaviour
 
         currentHealth = maxHealth;
         lastDamageTime = -999f;
+        OnVitaCambiata?.Invoke();
 
         var anim = GetComponent<Animator>();
         if (anim != null)

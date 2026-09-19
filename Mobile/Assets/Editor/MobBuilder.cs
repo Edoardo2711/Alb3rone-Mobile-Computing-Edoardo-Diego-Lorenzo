@@ -12,7 +12,10 @@ using UnityEngine;
 ///
 /// Cosa fa:
 ///   - Slice automatico delle sprite (se non gia' fatto) in modalita' "grid by cell size"
-///     assumendo strip orizzontale di frame quadrati.
+///     su una strip orizzontale. La larghezza della cella si passa in frameWidth; a 0 si
+///     tira a indovinare coi frame quadrati, che sui fogli di QUESTO progetto e' sbagliato
+///     (Zombie e Slime: celle 96x80 su fogli alti 80). Se la larghezza non entra un numero
+///     intero di volte, lo slicer si ferma e dice quali valori tornerebbero.
 ///   - Crea AnimationClip per ogni azione (Idle/Walk/Attack/Hit/Death) x direzione (Down/Left/Right/Up).
 ///   - Copia il controller dello Zombie (con i suoi Blend Tree) e rimpiazza le clip.
 ///   - Copia il prefab dello Zombie e gli assegna il nuovo controller + sprite di default.
@@ -53,7 +56,8 @@ public static class MobBuilder
     [MenuItem("Tools/Mob Builder/Slice & Crea Slime")]
     public static void SliceAndBuildSlime()
     {
-        SliceAndBuild("Slime", "Assets/Mob/Slime", "slime");
+        // 96 = la cella vera dei fogli di questo progetto, non l'altezza (80)
+        SliceAndBuild("Slime", "Assets/Mob/Slime", "slime", DEFAULT_TEMPLATE_PREFAB, DEFAULT_TEMPLATE_CONTROLLER, 96);
     }
 
     [MenuItem("Tools/Mob Builder/Slice & Crea Slime", true)]
@@ -62,7 +66,7 @@ public static class MobBuilder
     [MenuItem("Tools/Mob Builder/Solo Slice/Slime Sprites")]
     public static void SliceOnlySlime()
     {
-        SliceAllInMobFolder("Assets/Mob/Slime");
+        SliceAllInMobFolder("Assets/Mob/Slime", 96);
     }
 
     [MenuItem("Tools/Mob Builder/Solo Build (sprite gia' slicate)/Crea Slime")]
@@ -80,9 +84,10 @@ public static class MobBuilder
     /// </summary>
     public static void SliceAndBuild(string mobName, string mobFolder, string spritePrefix,
                                      string templatePrefab = DEFAULT_TEMPLATE_PREFAB,
-                                     string templateController = DEFAULT_TEMPLATE_CONTROLLER)
+                                     string templateController = DEFAULT_TEMPLATE_CONTROLLER,
+                                     int frameWidth = 0)
     {
-        SliceAllInMobFolder(mobFolder);
+        SliceAllInMobFolder(mobFolder, frameWidth);
         BuildMob(mobName, mobFolder, spritePrefix, templatePrefab, templateController);
     }
 
@@ -91,7 +96,12 @@ public static class MobBuilder
     /// Assume strip orizzontale di frame quadrati (frameWidth = textureHeight,
     /// frameCount = textureWidth / textureHeight).
     /// </summary>
-    public static void SliceAllInMobFolder(string mobFolder)
+    /// <param name="frameWidth">
+    /// Larghezza della cella in pixel. 0 = "indovina", cioe' frame quadrati di lato pari
+    /// all'altezza della texture. ⚠ I fogli di questo progetto NON sono quadrati: Zombie e
+    /// Slime hanno celle 96x80 su fogli alti 80, quindi per loro va passato 96.
+    /// </param>
+    public static void SliceAllInMobFolder(string mobFolder, int frameWidth = 0)
     {
         if (!AssetDatabase.IsValidFolder(mobFolder))
         {
@@ -108,24 +118,18 @@ public static class MobBuilder
 
         Debug.Log($"[MobBuilder/Slicer] === Slicing PNG in {spriteFolder} ===");
 
-        try
+        // Niente StartAssetEditing qui: ogni texture ha bisogno del suo SaveAndReimport,
+        // che dentro un blocco viene rimandato e lascia le sprite non slicate al passo dopo.
+        string[] pngGuids = AssetDatabase.FindAssets("t:Texture2D", new[] { spriteFolder });
+        int sliced = 0, skipped = 0;
+        foreach (var guid in pngGuids)
         {
-            AssetDatabase.StartAssetEditing();
-            string[] pngGuids = AssetDatabase.FindAssets("t:Texture2D", new[] { spriteFolder });
-            int sliced = 0, skipped = 0;
-            foreach (var guid in pngGuids)
-            {
-                string path = AssetDatabase.GUIDToAssetPath(guid);
-                if (SliceTextureAutoGrid(path)) sliced++; else skipped++;
-            }
-            Debug.Log($"[MobBuilder/Slicer]  -> {sliced} texture slicate, {skipped} saltate (gia' slicate o errore).");
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            if (SliceTextureAutoGrid(path, frameWidth)) sliced++; else skipped++;
         }
-        finally
-        {
-            AssetDatabase.StopAssetEditing();
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-        }
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+        Debug.Log($"[MobBuilder/Slicer]  -> {sliced} texture slicate, {skipped} saltate (gia' slicate o errore).");
     }
 
     /// <summary>
@@ -133,7 +137,7 @@ public static class MobBuilder
     /// assumendo strip orizzontale (frame quadrati, lato = altezza texture).
     /// Ritorna true se ha modificato l'asset, false se era gia' a posto / errore.
     /// </summary>
-    static bool SliceTextureAutoGrid(string texturePath)
+    static bool SliceTextureAutoGrid(string texturePath, int frameWidth = 0)
     {
         var importer = AssetImporter.GetAtPath(texturePath) as TextureImporter;
         if (importer == null) return false;
@@ -163,9 +167,25 @@ public static class MobBuilder
                 return false; // gia' slicato, non rifare
         }
 
-        // Calcola la grid: assume frame quadrati, lato = altezza texture
-        int frameSize = texH;
+        // Larghezza della cella: quella dichiarata, o si tira a indovinare coi frame quadrati
+        int frameSize = frameWidth > 0 ? frameWidth : texH;
         if (frameSize <= 0 || texW < frameSize) return false;
+
+        // ⚠ Se la larghezza non entra un numero intero di volte, la griglia e' sbagliata e
+        // affettare comunque produce frame tagliati a meta' senza dire niente. Meglio
+        // fermarsi e dire quali larghezze tornerebbero: su un foglio 768x80 i quadrati da
+        // 80 danno 9,6 frame, mentre la cella vera di questo progetto e' 96 (preso guardando
+        // i fogli dello Slime, 19/09/2026).
+        if (texW % frameSize != 0)
+        {
+            var candidate = new List<int>();
+            for (int w = 8; w <= texW; w++)
+                if (texW % w == 0 && texW / w >= 2 && texW / w <= 32) candidate.Add(w);
+            Debug.LogError($"[MobBuilder/Slicer] '{texturePath}' e' {texW}x{texH}: celle da {frameSize} px non ci stanno un numero intero di volte. "
+                + $"Passa frameWidth a mano, per esempio {string.Join(" o ", candidate.ConvertAll(x => x.ToString()).ToArray())}.");
+            return false;
+        }
+
         int frameCount = texW / frameSize;
         if (frameCount < 2) return false; // niente da slicare
 
@@ -179,7 +199,7 @@ public static class MobBuilder
             newRects.Add(new SpriteRect
             {
                 name = $"{baseName}_{i}",
-                rect = new Rect(i * frameSize, 0, frameSize, frameSize),
+                rect = new Rect(i * frameSize, 0, frameSize, texH),
                 alignment = SpriteAlignment.Center,
                 pivot = new Vector2(0.5f, 0.5f),
                 border = Vector4.zero,
@@ -195,7 +215,7 @@ public static class MobBuilder
         provider.Apply();
 
         importer.SaveAndReimport();
-        Debug.Log($"[MobBuilder/Slicer]  + Slice '{texturePath}': {frameCount} frame da {frameSize}x{frameSize}px");
+        Debug.Log($"[MobBuilder/Slicer]  + Slice '{texturePath}': {frameCount} frame da {frameSize}x{texH}px");
         return true;
     }
 
@@ -207,38 +227,146 @@ public static class MobBuilder
                                 string templatePrefab = DEFAULT_TEMPLATE_PREFAB,
                                 string templateController = DEFAULT_TEMPLATE_CONTROLLER)
     {
+        Debug.Log($"[MobBuilder] === Costruzione mob '{mobName}' ===");
+
+        if (!File.Exists(templatePrefab))
+        {
+            Debug.LogError($"[MobBuilder] Template prefab non trovato: {templatePrefab}");
+            return;
+        }
+        if (!File.Exists(templateController))
+        {
+            Debug.LogError($"[MobBuilder] Template controller non trovato: {templateController}");
+            return;
+        }
+        if (!AssetDatabase.IsValidFolder(mobFolder))
+        {
+            Debug.LogError($"[MobBuilder] Cartella del mob non trovata: {mobFolder}");
+            return;
+        }
+
+        // ⚠ Il lavoro e' diviso in due fasi ed e' importante che resti diviso.
+        // Le clip si possono creare in blocco dentro StartAssetEditing, ma controller e
+        // prefab NO: la' dentro l'import e' rimandato, quindi CopyAsset scrive il file e il
+        // LoadAssetAtPath subito dopo torna null. Prima era tutto in un blocco solo e si
+        // fermava con "Impossibile caricare il controller copiato" dopo aver creato le 20
+        // clip, lasciando il mob a meta' (preso costruendo lo Slime, 19/09/2026).
+        string animazioniFolder = $"{mobFolder}/Animazioni";
+        Dictionary<string, AnimationClip> createdClips = CreaClip(mobFolder, spritePrefix, animazioniFolder);
+
+        if (createdClips.Count == 0)
+        {
+            Debug.LogError($"[MobBuilder] Nessuna animazione creata. Sprite slicate? Cartelle corrette?");
+            return;
+        }
+
+        // ---------- FASE 2: controller e prefab, fuori da ogni StartAssetEditing ----------
+
+        string controllerPath = $"{animazioniFolder}/{mobName}.controller";
+        if (File.Exists(controllerPath)) AssetDatabase.DeleteAsset(controllerPath);
+        if (!AssetDatabase.CopyAsset(templateController, controllerPath))
+        {
+            Debug.LogError($"[MobBuilder] Impossibile copiare il controller da {templateController}");
+            return;
+        }
+        AssetDatabase.ImportAsset(controllerPath);
+
+        var newController = AssetDatabase.LoadAssetAtPath<AnimatorController>(controllerPath);
+        if (newController == null)
+        {
+            Debug.LogError("[MobBuilder] Impossibile caricare il controller copiato.");
+            return;
+        }
+
+        int remapped = RemapControllerClips(newController, createdClips);
+        Debug.Log($"[MobBuilder]  + Controller '{controllerPath}': rimappate {remapped} clip nei BlendTree/state.");
+
+        // Controllo: nel controller nuovo non deve restare nessuna clip del template.
+        // Se ne resta qualcuna, il mob nuovo si muoverebbe con l'animazione del vecchio.
+        string cartellaTemplate = Path.GetDirectoryName(templateController).Replace('\\', '/');
+        int residue = 0;
+        foreach (AnimationClip c in newController.animationClips)
+            if (c != null && AssetDatabase.GetAssetPath(c).StartsWith(cartellaTemplate)) residue++;
+        if (residue > 0)
+            Debug.LogWarning($"[MobBuilder] Attenzione: {residue} clip del template sono rimaste nel controller di '{mobName}'. Sprite mancanti?");
+
+        string prefabPath = $"{mobFolder}/{mobName}.prefab";
+        if (File.Exists(prefabPath)) AssetDatabase.DeleteAsset(prefabPath);
+        if (!AssetDatabase.CopyAsset(templatePrefab, prefabPath))
+        {
+            Debug.LogError($"[MobBuilder] Impossibile copiare il prefab da {templatePrefab}");
+            return;
+        }
+        AssetDatabase.ImportAsset(prefabPath);
+
+        var prefabContents = PrefabUtility.LoadPrefabContents(prefabPath);
+        if (prefabContents == null)
+        {
+            Debug.LogError($"[MobBuilder] Impossibile caricare il prefab {prefabPath}");
+            return;
+        }
+
+        try
+        {
+            prefabContents.name = mobName;
+
+            var animator = prefabContents.GetComponentInChildren<Animator>(true);
+            if (animator != null)
+                animator.runtimeAnimatorController = newController;
+            else
+                Debug.LogWarning("[MobBuilder] Nessun Animator trovato nel prefab template.");
+
+            var sr = prefabContents.GetComponentInChildren<SpriteRenderer>(true);
+            if (sr != null)
+            {
+                string defaultSpritePath = $"{mobFolder}/Sprite/Idle/{spritePrefix}_idle_down.png";
+                if (File.Exists(defaultSpritePath))
+                {
+                    var idleSprites = AssetDatabase.LoadAllAssetsAtPath(defaultSpritePath)
+                        .OfType<Sprite>()
+                        .OrderBy(s => NaturalSortKey(s.name))
+                        .ToArray();
+                    if (idleSprites.Length > 0)
+                        sr.sprite = idleSprites[0];
+                }
+            }
+
+            PrefabUtility.SaveAsPrefabAsset(prefabContents, prefabPath);
+        }
+        finally
+        {
+            // Va scaricato sempre, anche se qualcosa va storto: resterebbe aperta una
+            // scena di prefab invisibile.
+            PrefabUtility.UnloadPrefabContents(prefabContents);
+        }
+
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+
+        Debug.Log($"[MobBuilder] === Mob '{mobName}' creato con successo: {prefabPath} ===");
+        Debug.Log("[MobBuilder] Restano da tarare a mano nel prefab: vita, velocita', danno, raggio d'attacco e la misura del collider, che per ora sono quelli del template.");
+    }
+
+    /// <summary>
+    /// FASE 1: una AnimationClip per ogni azione x direzione, dalle sprite gia' slicate.
+    /// Questa parte si puo' fare in blocco: CreateAsset funziona anche mentre l'import e'
+    /// in pausa. Le cartelle invece si creano PRIMA di aprire il blocco (vedi EnsureFolder).
+    /// </summary>
+    static Dictionary<string, AnimationClip> CreaClip(string mobFolder, string spritePrefix, string animazioniFolder)
+    {
+        var createdClips = new Dictionary<string, AnimationClip>();
+
+        EnsureFolder(animazioniFolder);
+        foreach (var (action, spriteSubfolder, loop, fps) in ACTIONS)
+            EnsureFolder($"{animazioniFolder}/{spriteSubfolder}");
+
         try
         {
             AssetDatabase.StartAssetEditing();
 
-            Debug.Log($"[MobBuilder] === Costruzione mob '{mobName}' ===");
-
-            if (!File.Exists(templatePrefab))
-            {
-                Debug.LogError($"[MobBuilder] Template prefab non trovato: {templatePrefab}");
-                return;
-            }
-            if (!File.Exists(templateController))
-            {
-                Debug.LogError($"[MobBuilder] Template controller non trovato: {templateController}");
-                return;
-            }
-            if (!AssetDatabase.IsValidFolder(mobFolder))
-            {
-                Debug.LogError($"[MobBuilder] Cartella del mob non trovata: {mobFolder}");
-                return;
-            }
-
-            // 1. Crea le animation clip dalle sprite
-            string animazioniFolder = $"{mobFolder}/Animazioni";
-            EnsureFolder(animazioniFolder);
-
-            Dictionary<string, AnimationClip> createdClips = new Dictionary<string, AnimationClip>();
-
             foreach (var (action, spriteSubfolder, loop, fps) in ACTIONS)
             {
                 string actionAnimFolder = $"{animazioniFolder}/{spriteSubfolder}";
-                EnsureFolder(actionAnimFolder);
 
                 foreach (var dir in DIRECTIONS)
                 {
@@ -271,77 +399,6 @@ public static class MobBuilder
                     Debug.Log($"[MobBuilder]  + animazione {clipPath} ({sprites.Length} frame @ {fps}fps, loop={loop})");
                 }
             }
-
-            if (createdClips.Count == 0)
-            {
-                Debug.LogError($"[MobBuilder] Nessuna animazione creata. Sprite slicate? Cartelle corrette?");
-                return;
-            }
-
-            // 2. Copia il controller template e rimpiazza le clip
-            string controllerPath = $"{animazioniFolder}/{mobName}.controller";
-            if (File.Exists(controllerPath)) AssetDatabase.DeleteAsset(controllerPath);
-            if (!AssetDatabase.CopyAsset(templateController, controllerPath))
-            {
-                Debug.LogError($"[MobBuilder] Impossibile copiare il controller da {templateController}");
-                return;
-            }
-            AssetDatabase.ImportAsset(controllerPath);
-
-            var newController = AssetDatabase.LoadAssetAtPath<AnimatorController>(controllerPath);
-            if (newController == null)
-            {
-                Debug.LogError("[MobBuilder] Impossibile caricare il controller copiato.");
-                return;
-            }
-
-            int remapped = RemapControllerClips(newController, createdClips);
-            Debug.Log($"[MobBuilder]  + Controller '{controllerPath}': rimappate {remapped} clip nei BlendTree/state.");
-
-            // 3. Copia il prefab template e aggiorna i riferimenti
-            string prefabPath = $"{mobFolder}/{mobName}.prefab";
-            if (File.Exists(prefabPath)) AssetDatabase.DeleteAsset(prefabPath);
-            if (!AssetDatabase.CopyAsset(templatePrefab, prefabPath))
-            {
-                Debug.LogError($"[MobBuilder] Impossibile copiare il prefab da {templatePrefab}");
-                return;
-            }
-            AssetDatabase.ImportAsset(prefabPath);
-
-            var prefabContents = PrefabUtility.LoadPrefabContents(prefabPath);
-            if (prefabContents == null)
-            {
-                Debug.LogError($"[MobBuilder] Impossibile caricare il prefab {prefabPath}");
-                return;
-            }
-
-            prefabContents.name = mobName;
-
-            var animator = prefabContents.GetComponentInChildren<Animator>(true);
-            if (animator != null)
-                animator.runtimeAnimatorController = newController;
-            else
-                Debug.LogWarning("[MobBuilder] Nessun Animator trovato nel prefab template.");
-
-            var sr = prefabContents.GetComponentInChildren<SpriteRenderer>(true);
-            if (sr != null)
-            {
-                string defaultSpritePath = $"{mobFolder}/Sprite/Idle/{spritePrefix}_idle_down.png";
-                if (File.Exists(defaultSpritePath))
-                {
-                    var idleSprites = AssetDatabase.LoadAllAssetsAtPath(defaultSpritePath)
-                        .OfType<Sprite>()
-                        .OrderBy(s => NaturalSortKey(s.name))
-                        .ToArray();
-                    if (idleSprites.Length > 0)
-                        sr.sprite = idleSprites[0];
-                }
-            }
-
-            PrefabUtility.SaveAsPrefabAsset(prefabContents, prefabPath);
-            PrefabUtility.UnloadPrefabContents(prefabContents);
-
-            Debug.Log($"[MobBuilder] === Mob '{mobName}' creato con successo: {prefabPath} ===");
         }
         finally
         {
@@ -349,6 +406,8 @@ public static class MobBuilder
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
         }
+
+        return createdClips;
     }
 
     // ============================================================
@@ -445,12 +504,20 @@ public static class MobBuilder
         return remapped;
     }
 
+    /// <summary>
+    /// Crea la cartella se non c'e'.
+    /// ⚠ Il controllo si fa su disco con Directory.Exists e NON con
+    /// AssetDatabase.IsValidFolder: quella risponde "non esiste" mentre e' in corso uno
+    /// StartAssetEditing anche per cartelle che ci sono, e cosi' si creavano
+    /// "Animazioni 1", "Animazioni 2"... una nuova a ogni chiamata (preso costruendo lo
+    /// Slime, 19/09/2026: 5 cartelle vuote da buttare). Il disco invece non mente.
+    /// </summary>
     static void EnsureFolder(string path)
     {
-        if (AssetDatabase.IsValidFolder(path)) return;
+        if (Directory.Exists(path)) return;
         string parent = Path.GetDirectoryName(path).Replace('\\', '/');
         string folderName = Path.GetFileName(path);
-        if (!AssetDatabase.IsValidFolder(parent)) EnsureFolder(parent);
+        if (!Directory.Exists(parent)) EnsureFolder(parent);
         AssetDatabase.CreateFolder(parent, folderName);
     }
 

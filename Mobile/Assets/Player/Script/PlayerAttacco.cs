@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class PlayerAttacco : MonoBehaviour
@@ -18,6 +19,17 @@ public class PlayerAttacco : MonoBehaviour
     [Tooltip("Ritardo tra l'inizio dell'animazione e l'applicazione del danno (sincronia con il frame del colpo).")]
     public float hitDelay = 0.15f;
     public bool debugLog = true;
+
+    /// <summary>
+    /// Alzato da chi deve impedire l'attacco per un po' (adesso: DialogoUI mentre si parla).
+    /// Serve perche' spegnere il componente NON basta: PlayerInput chiama gli UnityEvent sul
+    /// target anche se il componente e' disabilitato, quindi il click con cui si sceglie la
+    /// risposta nel dialogo faceva partire anche un colpo di spada.
+    /// E' una proprieta' e non un campo serializzato di proposito: cosi' non puo' finire
+    /// salvata "chiusa" nella scena, che e' la trappola gia' presa con MovementPlayer e
+    /// PlayerAttacco spenti nel file (vedi REVISIONE.md, 19/09/2026).
+    /// </summary>
+    public bool Bloccato { get; set; }
 
     private float nextAttackTime = 0f;
     private MovementPlayer movementPlayer;
@@ -40,9 +52,15 @@ public class PlayerAttacco : MonoBehaviour
 
     private void TryAttack()
     {
-        // Da morto non si attacca. Serve anche se questo componente e' disabilitato:
-        // PlayerInput invoca gli UnityEvent sul target a prescindere dal suo enabled.
+        // Da morto non si attacca, e nemmeno mentre si sta parlando. Questi controlli
+        // servono anche se il componente e' disabilitato: PlayerInput invoca gli UnityEvent
+        // sul target a prescindere dal suo enabled.
         if (health != null && health.IsDead) return;
+        if (Bloccato) return;
+
+        // Il tasto sinistro serve anche a premere i bottoni dell'HUD (la pozione): senza
+        // questo, ogni click sull'icona tirava anche una spadata.
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
         if (Time.time < nextAttackTime) return;
         if (attackPoint == null)
         {

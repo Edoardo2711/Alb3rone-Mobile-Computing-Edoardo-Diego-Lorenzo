@@ -24,6 +24,14 @@ public class ZoneTransition : MonoBehaviour
     [Header("Spostamento del player")]
     [SerializeField] private Vector2 offset = Vector2.zero;
 
+    [Header("Serve la spada del fabbro?")]
+    [Tooltip("Acceso: senza la spada comprata il passaggio non si apre e compare un messaggio. " +
+             "Va acceso solo sul waypoint che porta al Dungeon.")]
+    [SerializeField] private bool richiedeSpada = false;
+
+    [TextArea(1, 3)]
+    [SerializeField] private string messaggioSenzaSpada = "Non posso avventurarmi con una spada non affilata.";
+
     [Header("Camera (opzionale)")]
     [SerializeField] private bool changeCameraSize = false;
     [SerializeField] private float newCameraSize = 5f;
@@ -50,6 +58,15 @@ public class ZoneTransition : MonoBehaviour
 
         // Protezione double-trigger: se stiamo già teletrasportando, esci subito
         if (isTeleporting) return;
+
+        // Il controllo della spada sta QUI dentro e non in uno script a parte sullo stesso
+        // trigger: fra due OnTriggerEnter2D l'ordine di esecuzione non e' garantito, e il
+        // teletrasporto partirebbe lo stesso prima che l'altro faccia in tempo a fermarlo.
+        if (richiedeSpada && !HaLaSpada())
+        {
+            MessaggioSchermo.Mostra(messaggioSenzaSpada);
+            return;
+        }
 
         isTeleporting = true;
 
@@ -80,6 +97,21 @@ public class ZoneTransition : MonoBehaviour
         // 5. Resetta il flag al frame successivo
         // (garantisce che i trigger della zona di destinazione non sparino subito)
         StartCoroutine(ResetTeleportFlag());
+    }
+
+    /// <summary>
+    /// Senza ProgressoGioco in scena si resta chiusi fuori: e' la scelta prudente, perche'
+    /// aprire il passaggio sarebbe un salto diretto al boss senza l'arma giusta.
+    /// </summary>
+    private bool HaLaSpada()
+    {
+        ProgressoGioco p = ProgressoGioco.Instance;
+        if (p == null)
+        {
+            Debug.LogWarning("[ZoneTransition] ProgressoGioco non in scena: il passaggio resta chiuso.");
+            return false;
+        }
+        return p.spadaComprata;
     }
 
     private System.Collections.IEnumerator ResetTeleportFlag()

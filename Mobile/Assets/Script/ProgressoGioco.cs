@@ -12,6 +12,7 @@ public class ProgressoGioco : MonoBehaviour
 
     [Header("Stato")]
     public int monete = 0;
+    public int pozioni = 0;
     public bool spadaComprata = false;
     public bool bossUcciso = false;
     public bool oggettoPreso = false;
@@ -21,6 +22,9 @@ public class ProgressoGioco : MonoBehaviour
 
     /// <summary>Scatta a ogni variazione delle monete, col totale nuovo. Lo usa il contatore nell'UI.</summary>
     public event System.Action<int> OnMoneteCambiate;
+
+    /// <summary>Scatta a ogni variazione delle pozioni, col totale nuovo. La usa il contatore nell'HUD.</summary>
+    public event System.Action<int> OnPozioniCambiate;
 
     /// <summary>Scatta quando cambia una delle tappe (spada, boss, oggetto) o dopo un caricamento.</summary>
     public event System.Action OnProgressoCambiato;
@@ -52,6 +56,24 @@ public class ProgressoGioco : MonoBehaviour
     }
 
     public bool HaMonete(int quante) => monete >= quante;
+
+    public void AggiungiPozioni(int quante)
+    {
+        if (quante <= 0) return;
+        pozioni += quante;
+        if (debugLog) Debug.Log($"[ProgressoGioco] +{quante} pozioni, totale {pozioni}");
+        OnPozioniCambiate?.Invoke(pozioni);
+    }
+
+    /// <summary>Ne consuma una. Torna false (e non toglie niente) se non ce ne sono.</summary>
+    public bool UsaPozione()
+    {
+        if (pozioni <= 0) return false;
+        pozioni--;
+        if (debugLog) Debug.Log($"[ProgressoGioco] Pozione bevuta, ne restano {pozioni}");
+        OnPozioniCambiate?.Invoke(pozioni);
+        return true;
+    }
 
     /// <summary>Paga se ci sono abbastanza monete. Torna false (e non toglie niente) se non bastano.</summary>
     public bool PagaMonete(int quante)
@@ -91,23 +113,27 @@ public class ProgressoGioco : MonoBehaviour
     public void Azzera()
     {
         monete = 0;
+        pozioni = 0;
         spadaComprata = false;
         bossUcciso = false;
         oggettoPreso = false;
         OnMoneteCambiate?.Invoke(monete);
+        OnPozioniCambiate?.Invoke(pozioni);
         OnProgressoCambiato?.Invoke();
     }
 
     /// <summary>Rimette lo stato letto dal salvataggio, avvisando UI e resto del gioco.</summary>
-    public void Applica(int moneteSalvate, bool spada, bool boss, bool oggetto)
+    public void Applica(int moneteSalvate, int pozioniSalvate, bool spada, bool boss, bool oggetto)
     {
         monete = Mathf.Max(0, moneteSalvate);
+        pozioni = Mathf.Max(0, pozioniSalvate);
         spadaComprata = spada;
         bossUcciso = boss;
         oggettoPreso = oggetto;
         if (debugLog)
-            Debug.Log($"[ProgressoGioco] Caricato: {monete} monete, spada={spada}, boss={boss}, oggetto={oggetto}");
+            Debug.Log($"[ProgressoGioco] Caricato: {monete} monete, {pozioni} pozioni, spada={spada}, boss={boss}, oggetto={oggetto}");
         OnMoneteCambiate?.Invoke(monete);
+        OnPozioniCambiate?.Invoke(pozioni);
         OnProgressoCambiato?.Invoke();
     }
 }

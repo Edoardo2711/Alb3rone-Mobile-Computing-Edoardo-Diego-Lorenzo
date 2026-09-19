@@ -38,7 +38,6 @@ public class DialogoUI : MonoBehaviour
 
     private NpcInterazione interlocutore;
     private DialogoNodo nodoCorrente;
-    private readonly List<GameObject> bottoniVivi = new List<GameObject>();
     private readonly List<SceltaDialogo> scelteMostrate = new List<SceltaDialogo>();
 
     private MovementPlayer movimento;
@@ -186,7 +185,6 @@ public class DialogoUI : MonoBehaviour
             int catturato = indice;   // senza copia, tutti i bottoni userebbero l'ultimo valore
             bottone.onClick.AddListener(() => Scegli(catturato));
         }
-        bottoniVivi.Add(b);
     }
 
     private void Scegli(int indice)
@@ -211,9 +209,26 @@ public class DialogoUI : MonoBehaviour
 
     private void PulisciBottoni()
     {
-        foreach (GameObject b in bottoniVivi)
-            if (b != null) Destroy(b);
-        bottoniVivi.Clear();
+        if (contenitoreScelte == null) return;
+
+        // Si guarda chi c'e' davvero nel contenitore invece di fidarsi di una lista.
+        // Con la lista bastava perderne lo stato una volta - una ricompilazione mentre il
+        // gioco gira la svuota, e i bottoni gia' in scena restano vivi - perche' da quel
+        // momento non li ripulisse piu' nessuno: le risposte del dialogo precedente
+        // restavano a schermo sotto quelle nuove (preso parlando col fabbro, 19/09/2026).
+        for (int i = contenitoreScelte.childCount - 1; i >= 0; i--)
+        {
+            GameObject figlio = contenitoreScelte.GetChild(i).gameObject;
+            if (bottoneStampo != null && figlio == bottoneStampo) continue;   // lo stampo resta
+
+            // Destroy agisce solo a fine frame: senza staccarlo e spegnerlo subito, il
+            // bottone vecchio resta figlio del contenitore mentre nascono i nuovi e il
+            // VerticalLayoutGroup li dispone tutti insieme. Col ContentSizeFitter la
+            // colonna delle risposte si allunga e finisce sopra la battuta.
+            figlio.SetActive(false);
+            figlio.transform.SetParent(null, false);
+            Destroy(figlio);
+        }
     }
 
     private void BloccaPlayer(bool blocca)
@@ -229,7 +244,13 @@ public class DialogoUI : MonoBehaviour
 
         // Stesso sistema di PlayerHealth.Die(): si spengono i componenti.
         if (movimento != null) movimento.enabled = !blocca;
-        if (attacco != null) attacco.enabled = !blocca;
+        if (attacco != null)
+        {
+            attacco.enabled = !blocca;
+            // Spegnerlo non basta: PlayerInput gli manda gli UnityEvent comunque, quindi il
+            // click con cui si scegle la risposta faceva partire anche un colpo di spada.
+            attacco.Bloccato = blocca;
+        }
 
         // Senza questo resta la velocita' dell'ultimo frame e il player scivola via parlando.
         if (blocca && corpoPlayer != null) corpoPlayer.linearVelocity = Vector2.zero;

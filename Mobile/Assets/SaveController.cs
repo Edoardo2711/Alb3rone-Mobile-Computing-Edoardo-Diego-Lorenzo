@@ -72,6 +72,7 @@ public class SaveController : MonoBehaviour
             // Il ProgressoGioco puo' mancare (scene senza GameManager): in quel caso
             // si salvano i valori di partenza invece di fermare tutto il salvataggio.
             monete         = progresso != null ? progresso.monete : 0,
+            pozioni        = progresso != null ? progresso.pozioni : 0,
             spadaComprata  = progresso != null && progresso.spadaComprata,
             bossUcciso     = progresso != null && progresso.bossUcciso,
             oggettoPreso   = progresso != null && progresso.oggettoPreso
@@ -96,7 +97,7 @@ public class SaveController : MonoBehaviour
             // Nei salvataggi fatti prima della quest questi campi non ci sono:
             // JsonUtility li lascia a 0 / false, che e' esattamente "quest mai iniziata".
             if (progresso != null)
-                progresso.Applica(saveData.monete, saveData.spadaComprata,
+                progresso.Applica(saveData.monete, saveData.pozioni, saveData.spadaComprata,
                                   saveData.bossUcciso, saveData.oggettoPreso);
             if (player != null)
             {

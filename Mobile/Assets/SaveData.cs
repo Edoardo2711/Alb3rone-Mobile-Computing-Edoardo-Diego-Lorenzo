@@ -13,6 +13,7 @@ public class SaveData
     // che nel file non ci sono, quindi un salvataggio vecchio si carica lo stesso
     // e questi restano a 0 / false.
     public int monete;
+    public int pozioni;
     public bool spadaComprata;
     public bool bossUcciso;
     public bool oggettoPreso;

@@ -21,7 +21,9 @@ public enum EffettoScelta
     DaiMonete,         // parametro = quante
     DaiSpada,
     SegnaBossUcciso,
-    SegnaOggettoPreso
+    SegnaOggettoPreso,
+    DaiPozioni         // parametro = quante. ⚠ In fondo: i valori sono salvati come numeri
+                       // negli .asset, e infilarlo in mezzo cambierebbe gli effetti gia' scritti
 }
 
 /// <summary>Un effetto con il suo numero. Una scelta puo' averne piu' d'uno: il negozio
@@ -109,6 +111,7 @@ public class SceltaDialogo
                 case EffettoScelta.DaiSpada:           p.SegnaSpadaComprata(); break;
                 case EffettoScelta.SegnaBossUcciso:    p.SegnaBossUcciso(); break;
                 case EffettoScelta.SegnaOggettoPreso:  p.SegnaOggettoPreso(); break;
+                case EffettoScelta.DaiPozioni:         p.AggiungiPozioni(e.parametro); break;
             }
         }
         return true;

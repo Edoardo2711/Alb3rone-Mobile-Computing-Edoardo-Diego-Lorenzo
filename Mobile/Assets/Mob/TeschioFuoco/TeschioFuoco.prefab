@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 6889982048710134662}
   - component: {fileID: 2605275890676774290}
   - component: {fileID: 6263987515159200214}
+  - component: {fileID: 3874827935827366097}
   m_Layer: 7
   m_Name: TeschioFuoco
   m_TagString: Mob
@@ -342,3 +343,21 @@ MonoBehaviour:
     width: 121
     height: 141
   ordineFuoriArea: 7270
+--- !u!114 &3874827935827366097
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7058241679132070929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b52906aef1f99a54b98f89e20b3eab55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DropMonete
+  prefabMoneta: {fileID: 546685536117510556, guid: ed0708a79cbe3654aa58d6324fddbcdc, type: 3}
+  minMonete: 5
+  maxMonete: 10
+  raggioSparpagliamento: 1.2
+  scostamento: {x: 0, y: 0}
+  debugLog: 0
