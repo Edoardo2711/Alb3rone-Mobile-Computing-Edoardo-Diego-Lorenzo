@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: -183595849526540171}
   - component: {fileID: 6889982048710134662}
   - component: {fileID: 2605275890676774290}
+  - component: {fileID: 6263987515159200214}
   m_Layer: 7
   m_Name: TeschioFuoco
   m_TagString: Mob
@@ -85,9 +86,9 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: -1588608131
-  m_SortingLayer: 4
-  m_SortingOrder: 0
+  m_SortingLayerID: -466948613
+  m_SortingLayer: 5
+  m_SortingOrder: 7270
   m_MaskInteraction: 0
   m_Sprite: {fileID: -4776374972668364119, guid: f44ff5cb607208a43b2a59ca2f4b4444, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -301,6 +302,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MobRangedAttack
   targetTag: Player
   target: {fileID: 0}
+  aimAtCollider: 1
+  aimOffset: {x: 0, y: 0}
   attackRange: 7
   attackCooldown: 2
   projectilePrefab: {fileID: 5747953974666823154, guid: 37cdf73a62aa6fa4d93b4827ff7064a6, type: 3}
@@ -316,3 +319,26 @@ MonoBehaviour:
   lookYParam: LookY
   stopMobAIDuringAttack: 0
   debugLog: 0
+--- !u!114 &6263987515159200214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7058241679132070929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c70ba96d563d97344a1b2814302507c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OrdinamentoY
+  ogniFrame: 1
+  riferimento: {fileID: -2308853791952669137}
+  scostamentoPiedi: 0
+  soloDentroArea: 0
+  area:
+    serializedVersion: 2
+    x: -199
+    y: -152
+    width: 121
+    height: 141
+  ordineFuoriArea: 7270
