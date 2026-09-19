@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f872405e0c1421746a0df4185848db3a, type: 3}
+  m_Name: Fabbro_1
+  m_EditorClassIdentifier: Assembly-CSharp::DialogoNodo
+  chiParla: Fabbro
+  testo: Ferro buono, prezzi onesti. Ti serve qualcosa?
+  scelte:
+  - testo: Quella spada lunga dietro di te. Quanto?
+    nodoSuccessivo: {fileID: 11400000, guid: db1c175732385dc4e82e53c8b18a9542, type: 2}
+    condizione: 4
+    parametroCondizione: 0
+    effetti: []
+  - testo: Come va il lavoro?
+    nodoSuccessivo: {fileID: 0}
+    condizione: 0
+    parametroCondizione: 0
+    effetti: []

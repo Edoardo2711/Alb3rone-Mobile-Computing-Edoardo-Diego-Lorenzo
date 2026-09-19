@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 1343417823644809103}
   - component: {fileID: 8238911397060580329}
   - component: {fileID: 2422366900127500527}
+  - component: {fileID: 409367943789974371}
   m_Layer: 0
   m_Name: Fireball
   m_TagString: Untagged
@@ -81,9 +82,9 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: -1588608131
-  m_SortingLayer: 4
-  m_SortingOrder: 1
+  m_SortingLayerID: -466948613
+  m_SortingLayer: 5
+  m_SortingOrder: 50
   m_MaskInteraction: 0
   m_Sprite: {fileID: -3953201116891174520, guid: b3904986fe3e35d41840ccdb481e9ba9, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -198,3 +199,26 @@ MonoBehaviour:
   rotateTowardsDirection: 0
   impactTrigger: Impatto
   impactDuration: 0.35
+--- !u!114 &409367943789974371
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5747953974666823154}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c70ba96d563d97344a1b2814302507c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OrdinamentoY
+  ogniFrame: 1
+  riferimento: {fileID: 1343417823644809103}
+  scostamentoPiedi: 0
+  soloDentroArea: 0
+  area:
+    serializedVersion: 2
+    x: -199
+    y: -152
+    width: 121
+    height: 141
+  ordineFuoriArea: 50

@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f872405e0c1421746a0df4185848db3a, type: 3}
+  m_Name: Fabbro_2
+  m_EditorClassIdentifier: Assembly-CSharp::DialogoNodo
+  chiParla: Fabbro
+  testo: 'Trenta monete. E non le chiedo per il ferro: le chiedo per dove vorrai
+    portarla.'
+  scelte:
+  - testo: La prendo. (30 monete)
+    nodoSuccessivo: {fileID: 11400000, guid: 72ca3e7fc8431e84b81d5d36bf6e1573, type: 2}
+    condizione: 4
+    parametroCondizione: 0
+    effetti:
+    - tipo: 1
+      parametro: 30
+    - tipo: 3
+      parametro: 0
+  - testo: Ci penso su.
+    nodoSuccessivo: {fileID: 0}
+    condizione: 0
+    parametroCondizione: 0
+    effetti: []

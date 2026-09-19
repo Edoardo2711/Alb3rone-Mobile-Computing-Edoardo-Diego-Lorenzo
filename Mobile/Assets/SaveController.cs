@@ -18,11 +18,14 @@ public class SaveController : MonoBehaviour
 
     private string saveLocation;
     private InventoryController inventoryController;
+    private ProgressoGioco progresso;
 
     void Start()
     {
         saveLocation = SavePath;
         inventoryController = FindObjectOfType<InventoryController>();
+        // Instance e' gia' pronto: lo assegna Awake, che gira prima di tutti gli Start.
+        progresso = ProgressoGioco.Instance;
 
         if (LoadOnNextStart)
         {
@@ -64,7 +67,14 @@ public class SaveController : MonoBehaviour
             // su GameObject disattivati, e l'inventario non e' in tutte le scene.
             inventorySaveData = inventoryController != null
                 ? inventoryController.GetInventoryItems()
-                : new List<InventorySaveData>()
+                : new List<InventorySaveData>(),
+
+            // Il ProgressoGioco puo' mancare (scene senza GameManager): in quel caso
+            // si salvano i valori di partenza invece di fermare tutto il salvataggio.
+            monete         = progresso != null ? progresso.monete : 0,
+            spadaComprata  = progresso != null && progresso.spadaComprata,
+            bossUcciso     = progresso != null && progresso.bossUcciso,
+            oggettoPreso   = progresso != null && progresso.oggettoPreso
         };
 
         File.WriteAllText(saveLocation, JsonUtility.ToJson(saveData));
@@ -82,6 +92,12 @@ public class SaveController : MonoBehaviour
             // Un salvataggio creato prima dell'inventario non ha la lista: saltiamo.
             if (inventoryController != null && saveData.inventorySaveData != null)
                 inventoryController.SetInventoryItems(saveData.inventorySaveData);
+
+            // Nei salvataggi fatti prima della quest questi campi non ci sono:
+            // JsonUtility li lascia a 0 / false, che e' esattamente "quest mai iniziata".
+            if (progresso != null)
+                progresso.Applica(saveData.monete, saveData.spadaComprata,
+                                  saveData.bossUcciso, saveData.oggettoPreso);
             if (player != null)
             {
                 player.transform.position = saveData.playerPosition;

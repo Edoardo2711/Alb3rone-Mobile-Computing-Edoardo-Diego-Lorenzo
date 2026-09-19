@@ -19,6 +19,9 @@ public class MovementPlayer : MonoBehaviour
     [Tooltip("Quanto in fretta la velocita' raggiunge quella desiderata (unita'/s^2). Valori alti = piu' reattivo, 0 = istantaneo come prima.")]
     public float accelerazione = 80f;
 
+    [Tooltip("Cambiando direzione la velocita' gira subito invece di curvare. Toglie lo scivolamento in curva senza togliere l'ammorbidimento di partenza, arresto e uscita dall'attacco.")]
+    public bool svoltaIstantanea = true;
+
     private Rigidbody2D rb;
     private Animator animator;
     private PlayerHealth health;
@@ -61,6 +64,22 @@ public class MovementPlayer : MonoBehaviour
             velocita *= attackMoveMultiplier;
 
         Vector2 desiderata = input * velocita;
+
+        // Svolta istantanea: la velocita' viene ruotata subito sulla direzione nuova
+        // tenendo il modulo che aveva. Senza, MoveTowards fa passare il vettore
+        // *attraverso* quello vecchio e il player scivola per un attimo dove andava prima
+        // (0,125 s in inversione a U con accelerazione 80 e velocita' 5).
+        // Resta l'accelerazione a governare il modulo: partenza, arresto, uscita dall'attacco.
+        if (svoltaIstantanea && input.sqrMagnitude > 0.0001f)
+        {
+            Vector2 attuale = rb.linearVelocity;
+            if (attuale.sqrMagnitude > 0.0001f)
+            {
+                Vector2 direzione = input.normalized;
+                // Il modulo non deve crescere: durante l'attacco la velocita' massima e' ridotta.
+                rb.linearVelocity = direzione * Mathf.Min(attuale.magnitude, velocita);
+            }
+        }
 
         // Raggiungi la velocita' desiderata gradualmente invece che di scatto:
         // toglie lo strappo sia all'inizio che alla fine dell'attacco.
