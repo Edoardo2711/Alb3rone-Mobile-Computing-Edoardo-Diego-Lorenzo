@@ -10,6 +10,12 @@
 /[Bb]uilds/
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
+# Il progetto Unity sta in Mobile/: le regole qui sopra con la "/" iniziale valgono solo per la
+# radice del repository, quindi servono anche le versioni dentro Mobile/.
+/Mobile/[Ll]ogs/
+/Mobile/[Uu]ser[Ss]ettings/
+/Mobile/[Bb]uild/
+/Mobile/[Bb]uilds/
 *.log
 
 # By default unity supports Blender asset imports, *.blend1 blender files do not need to be commited to version control.
