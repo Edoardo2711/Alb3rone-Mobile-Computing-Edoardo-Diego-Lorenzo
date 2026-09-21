@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Ilde_5
   m_EditorClassIdentifier: Assembly-CSharp::DialogoNodo
   chiParla: Ilde
-  testo: E' sulla mensola, accanto alla sua lanterna. Ogni sera la guardo e penso
-    a lui. E un po' anche a te.
+  testo: L'ho rimesso al suo posto, nel cassetto di mia madre. Stanotte, per la prima
+    volta da allora, dormiro' tranquilla.
   scelte:
   - testo: Ne sono felice.
     nodoSuccessivo: {fileID: 0}

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Ilde_4
   m_EditorClassIdentifier: Assembly-CSharp::DialogoNodo
   chiParla: Ilde
-  testo: Allora non e' sceso per niente. Grazie. Finche' ci sara' qualcuno a Leadale,
+  testo: Me l'hai riportato davvero. Grazie. Finche' ci sara' qualcuno a Leadale,
     nessuno dimentichera' quello che hai fatto.
   scelte:
   - testo: Di niente.

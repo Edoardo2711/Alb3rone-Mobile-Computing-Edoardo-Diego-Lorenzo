@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: Ilde_1
   m_EditorClassIdentifier: Assembly-CSharp::DialogoNodo
   chiParla: Ilde
-  testo: Mio padre scese nelle segrete anni fa e non torno' piu'. Laggiu', in fondo,
-    c'e' una cosa che era sua. Me la riporteresti?
+  testo: Una notte, qualche tempo fa, qualcosa di oscuro e' entrato in casa mia.
+    La mattina dopo l'anello della mia famiglia era sparito. Me lo riporteresti?
   scelte:
-  - testo: Cosa devo cercare?
+  - testo: Dove potrebbe essere?
     nodoSuccessivo: {fileID: 11400000, guid: 0e8e0b31c5559c34b9c6b9f47f2aee76, type: 2}
     condizione: 0
     parametroCondizione: 0

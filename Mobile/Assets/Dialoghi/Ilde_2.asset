@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: Ilde_2
   m_EditorClassIdentifier: Assembly-CSharp::DialogoNodo
   chiParla: Ilde
-  testo: 'Non so com''e'' fatta: non me l''ha mai mostrata. So solo che sta oltre
-    la sala grande, dove nessuno e'' piu'' tornato. Quando la vedrai, la riconoscerai.'
+  testo: 'L''ho visto scivolare via verso ovest, verso le segrete: un''ombra con
+    due occhi viola. Da quella notte laggiu'' non scende piu'' nessuno.'
   scelte:
-  - testo: Te la riportero'.
+  - testo: Te lo riportero'.
     nodoSuccessivo: {fileID: 0}
     condizione: 0
     parametroCondizione: 0
