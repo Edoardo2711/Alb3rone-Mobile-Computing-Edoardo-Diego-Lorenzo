@@ -39,6 +39,13 @@ public class ZoneTransition : MonoBehaviour
     [TextArea(1, 3)]
     [SerializeField] private string messaggioBossVivo = "La porta non si apre finche' il demone e' in vita.";
 
+    [Header("Salvataggio automatico")]
+    [Tooltip("Acceso: dopo il passaggio la partita si salva da sola, ma solo se il boss e' ancora vivo. " +
+             "Va acceso solo sull'ingresso del Dungeon: morendo contro il boss, 'Continua' riparte da li'.")]
+    [SerializeField] private bool salvaSeBossVivo = false;
+
+    [SerializeField] private string messaggioSalvataggio = "Partita salvata.";
+
     [Header("Camera (opzionale)")]
     [SerializeField] private bool changeCameraSize = false;
     [SerializeField] private float newCameraSize = 5f;
@@ -105,6 +112,22 @@ public class ZoneTransition : MonoBehaviour
         {
             rb.position = newPos;
             rb.linearVelocity = Vector2.zero;
+        }
+
+        // 4. Salvataggio automatico davanti al boss: dopo confiner, zoom e posizione, cosi' il
+        //    salvataggio registra la zona e il punto giusti.
+        if (salvaSeBossVivo && !BossUcciso())
+        {
+            SaveController salvataggio = FindFirstObjectByType<SaveController>();
+            if (salvataggio != null)
+            {
+                salvataggio.SaveGame();
+                if (!string.IsNullOrEmpty(messaggioSalvataggio)) MessaggioSchermo.Mostra(messaggioSalvataggio);
+            }
+            else
+            {
+                Debug.LogWarning("[ZoneTransition] SaveController non in scena: salvataggio automatico saltato.");
+            }
         }
 
         // 5. Resetta il flag al frame successivo
