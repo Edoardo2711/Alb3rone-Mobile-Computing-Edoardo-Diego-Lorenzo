@@ -10,7 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1318485374274509121}
   - component: {fileID: 4874711630132081233}
-  - component: {fileID: 817589887168105872}
+  - component: {fileID: 6115696841281541680}
+  - component: {fileID: 5420676592830089301}
   m_Layer: 0
   m_Name: TrappolaSpine
   m_TagString: Untagged
@@ -92,25 +93,90 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!95 &817589887168105872
-Animator:
-  serializedVersion: 7
+--- !u!61 &6115696841281541680
+BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1837947731631153084}
   m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: b598a0b55d14117429048fd82d129eea, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0.06}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0}
+    oldSize: {x: 0.15, y: 0.12}
+    newSize: {x: 0.15, y: 0.14}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 0.13, y: 0.12}
+  m_EdgeRadius: 0
+--- !u!114 &5420676592830089301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1837947731631153084}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 990e77b9a159e9b4aa4b9ab1078a69b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Trappola
+  innesco: 0
+  ritardoIniziale: 0
+  frameRiposo:
+  - {fileID: 5159668621130610765, guid: c986c4c0a8050254eabe7211f0e79160, type: 3}
+  framePreavviso:
+  - {fileID: -3181873047013513522, guid: c986c4c0a8050254eabe7211f0e79160, type: 3}
+  - {fileID: -3181873047013513522, guid: c986c4c0a8050254eabe7211f0e79160, type: 3}
+  - {fileID: -3181873047013513522, guid: c986c4c0a8050254eabe7211f0e79160, type: 3}
+  - {fileID: 5159668621130610765, guid: c986c4c0a8050254eabe7211f0e79160, type: 3}
+  - {fileID: 5159668621130610765, guid: c986c4c0a8050254eabe7211f0e79160, type: 3}
+  - {fileID: 5159668621130610765, guid: c986c4c0a8050254eabe7211f0e79160, type: 3}
+  frameSalita:
+  - {fileID: 6060364051883591738, guid: c986c4c0a8050254eabe7211f0e79160, type: 3}
+  - {fileID: -3278529959534556783, guid: c986c4c0a8050254eabe7211f0e79160, type: 3}
+  frameAttiva:
+  - {fileID: -2642446536169503005, guid: c986c4c0a8050254eabe7211f0e79160, type: 3}
+  frameDiscesa:
+  - {fileID: -3278529959534556783, guid: c986c4c0a8050254eabe7211f0e79160, type: 3}
+  - {fileID: 6060364051883591738, guid: c986c4c0a8050254eabe7211f0e79160, type: 3}
+  fps: 12
+  durataPreavviso: 0.5
+  durataAttiva: 0.8
+  ricarica: 1
+  danno: 10
+  intervalloDanno: 0.5
+  zonaDanno: {fileID: 6115696841281541680}
+  layerATerra: CamminaDavanti
+  layerAlzata: Player
+  debugLog: 0

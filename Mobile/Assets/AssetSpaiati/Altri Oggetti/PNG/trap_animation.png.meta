@@ -1333,19 +1333,19 @@ TextureImporter:
       name: trap_animation_0
       rect:
         serializedVersion: 2
-        x: 97
-        y: 321
+        x: 98
+        y: 322
         width: 15
-        height: 14
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        height: 12
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d4838391643da9740800000000000000
+      spriteID: 15f3d5ffae76d14438daff3a24efd136
       internalID: 5159668621130610765
       vertices: []
       indices: 
@@ -1355,19 +1355,19 @@ TextureImporter:
       name: trap_animation_1
       rect:
         serializedVersion: 2
-        x: 97
-        y: 240
+        x: 98
+        y: 242
         width: 15
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        height: 12
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ec6ae507257b7d3d0800000000000000
+      spriteID: 16ac4d875a8cf224ab4b72a2c0ff886e
       internalID: -3181873047013513522
       vertices: []
       indices: 
@@ -1377,19 +1377,19 @@ TextureImporter:
       name: trap_animation_2
       rect:
         serializedVersion: 2
-        x: 97
-        y: 160
-        width: 16
-        height: 19
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 98
+        y: 162
+        width: 15
+        height: 15
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a38811afefcba1450800000000000000
+      spriteID: f0aae459c0e55b7469dcbd42acb95e00
       internalID: 6060364051883591738
       vertices: []
       indices: 
@@ -1399,19 +1399,19 @@ TextureImporter:
       name: trap_animation_3
       rect:
         serializedVersion: 2
-        x: 97
-        y: 80
+        x: 98
+        y: 82
         width: 15
-        height: 24
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 19987784f525082d0800000000000000
+      spriteID: 749ddf7f742b93f4784010e9b715780a
       internalID: -3278529959534556783
       vertices: []
       indices: 
@@ -1421,19 +1421,19 @@ TextureImporter:
       name: trap_animation_4
       rect:
         serializedVersion: 2
-        x: 97
-        y: 0
+        x: 98
+        y: 2
         width: 15
-        height: 29
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        height: 25
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3e6c7a920e4245bd0800000000000000
+      spriteID: 0252b8d45a0ab28478784256a3474c73
       internalID: -2642446536169503005
       vertices: []
       indices: 
@@ -1457,21 +1457,9 @@ TextureImporter:
     nameFileIdTable:
       trap_animation_0: 5159668621130610765
       trap_animation_1: -3181873047013513522
-      trap_animation_10: 3905323209863592590
-      trap_animation_11: 817341159072259439
-      trap_animation_12: -3761326309877276820
-      trap_animation_13: -6234721130317223191
-      trap_animation_14: 5051701749771455801
-      trap_animation_15: 7919989764642830309
-      trap_animation_16: 4983595621129237328
       trap_animation_2: 6060364051883591738
       trap_animation_3: -3278529959534556783
       trap_animation_4: -2642446536169503005
-      trap_animation_5: 4907533917192894730
-      trap_animation_6: -6510833782055802075
-      trap_animation_7: 7514011147361318255
-      trap_animation_8: 277962840767097870
-      trap_animation_9: -3862876964262839824
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

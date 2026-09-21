@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f872405e0c1421746a0df4185848db3a, type: 3}
+  m_Name: Ilde_1
+  m_EditorClassIdentifier: Assembly-CSharp::DialogoNodo
+  chiParla: Ilde
+  testo: Mio padre scese nelle segrete anni fa e non torno' piu'. Laggiu', in fondo,
+    c'e' una cosa che era sua. Me la riporteresti?
+  scelte:
+  - testo: Cosa devo cercare?
+    nodoSuccessivo: {fileID: 11400000, guid: 0e8e0b31c5559c34b9c6b9f47f2aee76, type: 2}
+    condizione: 0
+    parametroCondizione: 0
+    effetti: []
+  - testo: Vedro' cosa posso fare.
+    nodoSuccessivo: {fileID: 0}
+    condizione: 0
+    parametroCondizione: 0
+    effetti: []

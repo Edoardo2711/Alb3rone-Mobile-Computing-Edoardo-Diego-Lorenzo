@@ -32,6 +32,13 @@ public class ZoneTransition : MonoBehaviour
     [TextArea(1, 3)]
     [SerializeField] private string messaggioSenzaSpada = "Non posso avventurarmi con una spada non affilata.";
 
+    [Header("Serve aver ucciso il boss?")]
+    [Tooltip("Acceso: finche' il demone e' vivo il passaggio non si apre. Va acceso solo sulla porta del Dungeon verso la zona Oggetto.")]
+    [SerializeField] private bool richiedeBoss = false;
+
+    [TextArea(1, 3)]
+    [SerializeField] private string messaggioBossVivo = "La porta non si apre finche' il demone e' in vita.";
+
     [Header("Camera (opzionale)")]
     [SerializeField] private bool changeCameraSize = false;
     [SerializeField] private float newCameraSize = 5f;
@@ -65,6 +72,12 @@ public class ZoneTransition : MonoBehaviour
         if (richiedeSpada && !HaLaSpada())
         {
             MessaggioSchermo.Mostra(messaggioSenzaSpada);
+            return;
+        }
+
+        if (richiedeBoss && !BossUcciso())
+        {
+            MessaggioSchermo.Mostra(messaggioBossVivo);
             return;
         }
 
@@ -112,6 +125,18 @@ public class ZoneTransition : MonoBehaviour
             return false;
         }
         return p.spadaComprata;
+    }
+
+    /// <summary>Come per la spada: senza ProgressoGioco in scena la porta resta chiusa.</summary>
+    private bool BossUcciso()
+    {
+        ProgressoGioco p = ProgressoGioco.Instance;
+        if (p == null)
+        {
+            Debug.LogWarning("[ZoneTransition] ProgressoGioco non in scena: il passaggio resta chiuso.");
+            return false;
+        }
+        return p.bossUcciso;
     }
 
     private System.Collections.IEnumerator ResetTeleportFlag()

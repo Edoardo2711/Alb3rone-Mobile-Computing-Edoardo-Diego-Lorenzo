@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Alchimista_1
   m_EditorClassIdentifier: Assembly-CSharp::DialogoNodo
   chiParla: Alchimista
-  testo: Radici, muffe e un po' di pazienza. Dimmi cosa ti serve.
+  testo: Radici, muffe e pazienza. Se sanguini, sei nel posto giusto.
   scelte:
   - testo: Hai qualcosa per le ferite?
     nodoSuccessivo: {fileID: 11400000, guid: b517e11a103a656449278101608202da, type: 2}

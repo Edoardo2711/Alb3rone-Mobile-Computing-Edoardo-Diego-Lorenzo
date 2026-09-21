@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Alchimista_2
   m_EditorClassIdentifier: Assembly-CSharp::DialogoNodo
   chiParla: Alchimista
-  testo: 'Cinque monete l''una. Ti rimette in piedi di un terzo, non di piu'': il
-    resto lo devi al tuo fegato.'
+  testo: 'Cinque monete a boccetta. Ti rimette in piedi di un terzo: il resto e''
+    affare tuo.'
   scelte:
   - testo: Ne prendo una. (5 monete)
     nodoSuccessivo: {fileID: 11400000, guid: 033015822e0941c4c9f7e638d3957e06, type: 2}

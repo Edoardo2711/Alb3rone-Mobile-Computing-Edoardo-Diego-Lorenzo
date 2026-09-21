@@ -16,6 +16,8 @@ public class ProgressoGioco : MonoBehaviour
     public bool spadaComprata = false;
     public bool bossUcciso = false;
     public bool oggettoPreso = false;
+    [Tooltip("L'oggetto finale e' stato riportato a Ilde (e tolto dall'inventario).")]
+    public bool oggettoConsegnato = false;
 
     [Header("Debug")]
     public bool debugLog = true;
@@ -109,6 +111,14 @@ public class ProgressoGioco : MonoBehaviour
         OnProgressoCambiato?.Invoke();
     }
 
+    public void SegnaOggettoConsegnato()
+    {
+        if (oggettoConsegnato) return;
+        oggettoConsegnato = true;
+        if (debugLog) Debug.Log("[ProgressoGioco] Oggetto finale consegnato a Ilde.");
+        OnProgressoCambiato?.Invoke();
+    }
+
     /// <summary>Riporta tutto a zero: la usa "Nuova Partita".</summary>
     public void Azzera()
     {
@@ -117,19 +127,21 @@ public class ProgressoGioco : MonoBehaviour
         spadaComprata = false;
         bossUcciso = false;
         oggettoPreso = false;
+        oggettoConsegnato = false;
         OnMoneteCambiate?.Invoke(monete);
         OnPozioniCambiate?.Invoke(pozioni);
         OnProgressoCambiato?.Invoke();
     }
 
     /// <summary>Rimette lo stato letto dal salvataggio, avvisando UI e resto del gioco.</summary>
-    public void Applica(int moneteSalvate, int pozioniSalvate, bool spada, bool boss, bool oggetto)
+    public void Applica(int moneteSalvate, int pozioniSalvate, bool spada, bool boss, bool oggetto, bool consegnato = false)
     {
         monete = Mathf.Max(0, moneteSalvate);
         pozioni = Mathf.Max(0, pozioniSalvate);
         spadaComprata = spada;
         bossUcciso = boss;
         oggettoPreso = oggetto;
+        oggettoConsegnato = consegnato;
         if (debugLog)
             Debug.Log($"[ProgressoGioco] Caricato: {monete} monete, {pozioni} pozioni, spada={spada}, boss={boss}, oggetto={oggetto}");
         OnMoneteCambiate?.Invoke(monete);

@@ -16,6 +16,16 @@ MonoBehaviour:
   testo: La' sotto c'e' qualcosa che non ha piu' fame da un pezzo. Eppure mangia
     ancora.
   scelte:
+  - testo: Come si combatte una cosa cosi'?
+    nodoSuccessivo: {fileID: 11400000, guid: 5342875435a360c40a1226d5f8a68fbe, type: 2}
+    condizione: 0
+    parametroCondizione: 0
+    effetti: []
+  - testo: L'ho sconfitto.
+    nodoSuccessivo: {fileID: 11400000, guid: 237577981db224143b8bbfa72d68cd23, type: 2}
+    condizione: 5
+    parametroCondizione: 0
+    effetti: []
   - testo: Bel modo di darmi la buonanotte.
     nodoSuccessivo: {fileID: 0}
     condizione: 0

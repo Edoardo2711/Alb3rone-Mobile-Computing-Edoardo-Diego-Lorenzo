@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Alchimista_3
   m_EditorClassIdentifier: Assembly-CSharp::DialogoNodo
   chiParla: Alchimista
-  testo: Bevila tutta d'un fiato. A sorsi non funziona.
+  testo: Bevila tutta d'un fiato quando ne hai bisogno. A sorsi non funziona.
   scelte:
   - testo: Un'altra.
     nodoSuccessivo: {fileID: 11400000, guid: b517e11a103a656449278101608202da, type: 2}

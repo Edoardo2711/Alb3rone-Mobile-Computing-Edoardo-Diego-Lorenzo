@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 2292534034717607947}
   - component: {fileID: 8001385350159907949}
   - component: {fileID: 3007579152849945121}
-  - component: {fileID: 4990501114610169411}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -167,35 +166,3 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &4990501114610169411
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5401108960854319932}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b85fb607c6f3974986cbc8f84553684, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
-  moveSpeed: 5
-  rb: {fileID: 8001385350159907949}
-  AzioneMovimento:
-    m_Name: Azione Movimento
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 2be5042f-d22c-4b07-a9f2-6635c4e5ce1f
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
-  moveAction:
-    m_Name: Move
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 83436a76-42fb-4397-9e2d-af5fa4db7590
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0

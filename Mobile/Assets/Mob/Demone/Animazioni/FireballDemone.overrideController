@@ -1,0 +1,15 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: FireballDemone
+  m_Controller: {fileID: 9100000, guid: 75dab6f97c9301340acf8816a24ca262, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: 2b6dd7a131e70c344b8ecf277941e0f8, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 3056bd2d310b6af4a8fcd95bed3c8b3e, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 10bd7ed33eff2144db9fa943a9150107, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: a0b0221e93990fb48ac908e5b1af1d48, type: 2}

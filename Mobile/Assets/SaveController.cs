@@ -46,7 +46,7 @@ public class SaveController : MonoBehaviour
         }
 
         // Cerchiamo il confiner, ma se non c'� non ci disperiamo
-        CinemachineConfiner2D confiner = FindFirstObjectByType<CinemachineConfiner2D>();
+        CinemachineConfiner confiner = FindFirstObjectByType<CinemachineConfiner>();
         string boundaryName = "";
 
         if (confiner != null && confiner.m_BoundingShape2D != null)
@@ -55,7 +55,7 @@ public class SaveController : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Nessun Confiner2D trovato o assegnato. Salvo solo la posizione del player.");
+            Debug.LogWarning("Nessun CinemachineConfiner trovato o assegnato. Salvo solo la posizione del player.");
         }
 
         // Creiamo i dati
@@ -63,6 +63,8 @@ public class SaveController : MonoBehaviour
         {
             playerPosition = playerObj.transform.position,
             mapBoundary = boundaryName,
+            zoomCamera = FindFirstObjectByType<CinemachineVirtualCamera>() is CinemachineVirtualCamera vc
+                ? vc.m_Lens.OrthographicSize : 0f,
             // Il controller puo' mancare: FindObjectOfType non trova i componenti
             // su GameObject disattivati, e l'inventario non e' in tutte le scene.
             inventorySaveData = inventoryController != null
@@ -75,7 +77,8 @@ public class SaveController : MonoBehaviour
             pozioni        = progresso != null ? progresso.pozioni : 0,
             spadaComprata  = progresso != null && progresso.spadaComprata,
             bossUcciso     = progresso != null && progresso.bossUcciso,
-            oggettoPreso   = progresso != null && progresso.oggettoPreso
+            oggettoPreso   = progresso != null && progresso.oggettoPreso,
+            oggettoConsegnato = progresso != null && progresso.oggettoConsegnato
         };
 
         File.WriteAllText(saveLocation, JsonUtility.ToJson(saveData));
@@ -98,7 +101,8 @@ public class SaveController : MonoBehaviour
             // JsonUtility li lascia a 0 / false, che e' esattamente "quest mai iniziata".
             if (progresso != null)
                 progresso.Applica(saveData.monete, saveData.pozioni, saveData.spadaComprata,
-                                  saveData.bossUcciso, saveData.oggettoPreso);
+                                  saveData.bossUcciso, saveData.oggettoPreso,
+                                  saveData.oggettoConsegnato);
             if (player != null)
             {
                 player.transform.position = saveData.playerPosition;
@@ -107,13 +111,26 @@ public class SaveController : MonoBehaviour
             // Ripristiniamo i bordi SOLO se nel salvataggio c'era scritto un nome
             if (!string.IsNullOrEmpty(saveData.mapBoundary))
             {
-                CinemachineConfiner2D confiner = FindFirstObjectByType<CinemachineConfiner2D>();
-                GameObject boundaryObj = GameObject.Find(saveData.mapBoundary);
+                // La camera usa CinemachineConfiner (quello che cambia ZoneTransition), non il 2D:
+                // cercando il Confiner2D il salvataggio non trovava mai niente e la zona si perdeva.
+                CinemachineConfiner confiner = FindFirstObjectByType<CinemachineConfiner>();
+                // Prima fra i confini: in scena ci sono altri oggetti con lo stesso nome della zona.
+                GameObject boundaryObj = GameObject.Find("LimitiMappa/" + saveData.mapBoundary);
+                if (boundaryObj == null) boundaryObj = GameObject.Find(saveData.mapBoundary);
 
                 if (confiner != null && boundaryObj != null)
                 {
                     confiner.m_BoundingShape2D = boundaryObj.GetComponent<PolygonCollider2D>();
+                    confiner.InvalidatePathCache();
                 }
+            }
+
+            // Senza, la camera attraverserebbe tutta la mappa per raggiungere il player.
+            CinemachineVirtualCamera vcam = FindFirstObjectByType<CinemachineVirtualCamera>();
+            if (vcam != null)
+            {
+                if (saveData.zoomCamera > 0f) vcam.m_Lens.OrthographicSize = saveData.zoomCamera;
+                vcam.PreviousStateIsValid = false;
             }
         }
         else

@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: Vecchio_2
   m_EditorClassIdentifier: Assembly-CSharp::DialogoNodo
   chiParla: Vecchio
-  testo: 'Non chiederlo a me. Chiedilo a chi batte il ferro: e'' l''unico che c''e''
-    andato vicino ed e'' tornato indietro.'
+  testo: 'Non lo so, e non voglio saperlo. Chiedi a chi batte il ferro: e'' l''unico
+    che ci e'' andato vicino ed e'' tornato.'
   scelte:
-  - testo: Grazie, vecchio.
+  - testo: Grazie.
     nodoSuccessivo: {fileID: 0}
     condizione: 0
     parametroCondizione: 0

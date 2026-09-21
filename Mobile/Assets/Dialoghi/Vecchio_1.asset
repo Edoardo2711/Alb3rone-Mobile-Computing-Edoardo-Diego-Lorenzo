@@ -13,12 +13,17 @@ MonoBehaviour:
   m_Name: Vecchio_1
   m_EditorClassIdentifier: Assembly-CSharp::DialogoNodo
   chiParla: Vecchio
-  testo: Il villaggio non e' piu' quello di una volta. Da quando quella cosa si e'
-    presa le segrete, a ovest non ci scende piu' nessuno.
+  testo: 'Benvenuto a Leadale. O a quel che ne resta: da quando qualcosa si e'' preso
+    le segrete a ovest, laggiu'' non scende piu'' nessuno.'
   scelte:
-  - testo: Quale cosa?
+  - testo: Che cosa si e' preso le segrete?
     nodoSuccessivo: {fileID: 11400000, guid: 143f3123b4732554e877c5df5713899c, type: 2}
     condizione: 0
+    parametroCondizione: 0
+    effetti: []
+  - testo: Le segrete sono libere, vecchio.
+    nodoSuccessivo: {fileID: 11400000, guid: 79206d4779ac0904a83b73c04bbc1cb4, type: 2}
+    condizione: 5
     parametroCondizione: 0
     effetti: []
   - testo: Buona giornata.

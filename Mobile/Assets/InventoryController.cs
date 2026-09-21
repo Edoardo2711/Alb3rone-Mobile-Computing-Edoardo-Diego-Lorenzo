@@ -77,4 +77,38 @@
         }
     }
 }
+        
+    /// <summary>Mette una copia del prefab nel primo slot libero. Torna false se l'inventario e' pieno.</summary>
+    public bool AggiungiOggetto(GameObject itemPrefab)
+    {
+        if (itemPrefab == null || inventoryPanel == null) return false;
+        foreach (Transform slotTransform in inventoryPanel.transform)
+        {
+            Slot slot = slotTransform.GetComponent<Slot>();
+            if (slot == null || slot.currentItem != null) continue;
+            GameObject item = Instantiate(itemPrefab, slot.transform);
+            item.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+            slot.currentItem = item;
+            return true;
         }
+        Debug.LogWarning("[InventoryController] Inventario pieno: " + itemPrefab.name + " non aggiunto.");
+        return false;
+    }
+
+    /// <summary>Toglie il primo oggetto con quell'ID. Torna false se non c'era.</summary>
+    public bool RimuoviOggetto(int itemID)
+    {
+        if (inventoryPanel == null) return false;
+        foreach (Transform slotTransform in inventoryPanel.transform)
+        {
+            Slot slot = slotTransform.GetComponent<Slot>();
+            if (slot == null || slot.currentItem == null) continue;
+            Item item = slot.currentItem.GetComponent<Item>();
+            if (item == null || item.ID != itemID) continue;
+            Destroy(slot.currentItem);
+            slot.currentItem = null;
+            return true;
+        }
+        return false;
+    }
+}

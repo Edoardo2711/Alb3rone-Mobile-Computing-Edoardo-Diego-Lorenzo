@@ -17,6 +17,23 @@ public class NpcInterazione : MonoBehaviour
     [Tooltip("Prima battuta. Senza questo l'NPC non e' interrogabile.")]
     public DialogoNodo dialogoIniziale;
 
+    [Tooltip("Prime battute alternative: vince la prima la cui condizione e' vera, altrimenti si usa il dialogo iniziale. " +
+             "Serve a far cambiare discorso all'NPC con la storia (es. Ilde dopo la consegna).")]
+    public List<DialogoCondizionato> dialoghiCondizionati = new List<DialogoCondizionato>();
+
+    /// <summary>La battuta da cui parte il dialogo adesso.</summary>
+    public DialogoNodo NodoIniziale
+    {
+        get
+        {
+            if (dialoghiCondizionati != null)
+                foreach (DialogoCondizionato d in dialoghiCondizionati)
+                    if (d != null && d.nodo != null && SceltaDialogo.Verifica(d.condizione, d.parametro, ProgressoGioco.Instance))
+                        return d.nodo;
+            return dialogoIniziale;
+        }
+    }
+
     [Header("Dove si parla")]
     [Tooltip("Figlio vuoto che segna il punto in cui il player deve trovarsi. Vuoto = si usa l'NPC stesso.")]
     public Transform puntoDialogo;
@@ -82,7 +99,7 @@ public class NpcInterazione : MonoBehaviour
         for (int i = 0; i < tutti.Count; i++)
         {
             NpcInterazione npc = tutti[i];
-            if (npc == null || npc.dialogoIniziale == null) continue;
+            if (npc == null || npc.NodoIniziale == null) continue;
 
             float d = Vector2.Distance(pos, npc.PuntoInterazione);
             if (d <= npc.raggio && d < minima)
@@ -127,4 +144,13 @@ public class NpcInterazione : MonoBehaviour
         Gizmos.color = new Color(0.2f, 0.9f, 1f, 0.35f);
         Gizmos.DrawWireSphere(PuntoInterazione, raggio);
     }
+}
+
+/// <summary>Una prima battuta che vale solo quando la condizione e' vera.</summary>
+[System.Serializable]
+public class DialogoCondizionato
+{
+    public CondizioneScelta condizione = CondizioneScelta.Nessuna;
+    public int parametro;
+    public DialogoNodo nodo;
 }

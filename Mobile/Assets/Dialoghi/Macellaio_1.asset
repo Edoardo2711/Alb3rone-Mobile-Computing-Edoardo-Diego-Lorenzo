@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f872405e0c1421746a0df4185848db3a, type: 3}
+  m_Name: Macellaio_1
+  m_EditorClassIdentifier: Assembly-CSharp::DialogoNodo
+  chiParla: Macellaio
+  testo: Se cerchi lavoro, qui non ce n'e'. Se cerchi soldi, il prato a ovest ne
+    e' pieno. Basta non farsi mangiare.
+  scelte:
+  - testo: E se mi serve una spada vera?
+    nodoSuccessivo: {fileID: 11400000, guid: 8896bea79cf7a754dbbf3875a89d34d1, type: 2}
+    condizione: 4
+    parametroCondizione: 0
+    effetti: []
+  - testo: Grazie del consiglio.
+    nodoSuccessivo: {fileID: 0}
+    condizione: 0
+    parametroCondizione: 0
+    effetti: []

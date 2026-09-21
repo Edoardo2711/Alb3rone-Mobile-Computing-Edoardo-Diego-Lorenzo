@@ -112,14 +112,14 @@ public class DialogoUI : MonoBehaviour
 
     public void Apri(NpcInterazione npc)
     {
-        if (npc == null || npc.dialogoIniziale == null || Aperto) return;
+        if (npc == null || npc.NodoIniziale == null || Aperto) return;
 
         interlocutore = npc;
         NpcInterazione.DialogoInCorso = true;
         if (prompt != null) prompt.SetActive(false);
         BloccaPlayer(true);
         if (pannello != null) pannello.SetActive(true);
-        MostraNodo(npc.dialogoIniziale);
+        MostraNodo(npc.NodoIniziale);
     }
 
     public void Chiudi()

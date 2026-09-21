@@ -10,7 +10,11 @@ public enum CondizioneScelta
     SpadaComprata,
     SpadaNonComprata,
     BossUcciso,
-    OggettoPreso
+    OggettoPreso,
+    // Aggiunti dopo: sempre in fondo, i valori sono salvati come numeri negli .asset.
+    OggettoDaConsegnare,   // raccolto ma non ancora dato a Ilde
+    OggettoConsegnato,
+    OggettoNonPreso
 }
 
 /// <summary>Cosa succede quando il player sceglie quella riga.</summary>
@@ -22,8 +26,9 @@ public enum EffettoScelta
     DaiSpada,
     SegnaBossUcciso,
     SegnaOggettoPreso,
-    DaiPozioni         // parametro = quante. ⚠ In fondo: i valori sono salvati come numeri
+    DaiPozioni,        // parametro = quante. ⚠ In fondo: i valori sono salvati come numeri
                        // negli .asset, e infilarlo in mezzo cambierebbe gli effetti gia' scritti
+    ConsegnaOggetto    // parametro = ID dell'oggetto: lo toglie dall'inventario e segna la consegna
 }
 
 /// <summary>Un effetto con il suo numero. Una scelta puo' averne piu' d'uno: il negozio
@@ -65,6 +70,14 @@ public class SceltaDialogo
             Debug.LogWarning("[SceltaDialogo] ProgressoGioco non in scena: la scelta \"" + testo + "\" resta nascosta.");
             return false;
         }
+        return Verifica(condizione, parametroCondizione, p);
+    }
+
+    /// <summary>La condizione e' vera adesso? La usa anche NpcInterazione per scegliere la prima battuta.</summary>
+    public static bool Verifica(CondizioneScelta condizione, int parametroCondizione, ProgressoGioco p)
+    {
+        if (condizione == CondizioneScelta.Nessuna) return true;
+        if (p == null) return false;
 
         switch (condizione)
         {
@@ -74,6 +87,9 @@ public class SceltaDialogo
             case CondizioneScelta.SpadaNonComprata: return !p.spadaComprata;
             case CondizioneScelta.BossUcciso:       return p.bossUcciso;
             case CondizioneScelta.OggettoPreso:     return p.oggettoPreso;
+            case CondizioneScelta.OggettoDaConsegnare: return p.oggettoPreso && !p.oggettoConsegnato;
+            case CondizioneScelta.OggettoConsegnato:   return p.oggettoConsegnato;
+            case CondizioneScelta.OggettoNonPreso:     return !p.oggettoPreso;
             default:                                return true;
         }
     }
@@ -112,6 +128,12 @@ public class SceltaDialogo
                 case EffettoScelta.SegnaBossUcciso:    p.SegnaBossUcciso(); break;
                 case EffettoScelta.SegnaOggettoPreso:  p.SegnaOggettoPreso(); break;
                 case EffettoScelta.DaiPozioni:         p.AggiungiPozioni(e.parametro); break;
+                case EffettoScelta.ConsegnaOggetto:
+                    InventoryController inv = Object.FindFirstObjectByType<InventoryController>();
+                    if (inv == null || !inv.RimuoviOggetto(e.parametro))
+                        Debug.LogWarning("[SceltaDialogo] Oggetto " + e.parametro + " non trovato nell'inventario: consegna segnata lo stesso.");
+                    p.SegnaOggettoConsegnato();
+                    break;
             }
         }
         return true;

@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Ladro_1
   m_EditorClassIdentifier: Assembly-CSharp::DialogoNodo
   chiParla: Ladro
-  testo: Siediti finche' il fuoco tiene. Piu' avanti non c'e' dove.
+  testo: Siediti finche' il fuoco tiene. E le monete che lasciano le bestie raccoglile
+    in fretta, prima che ci pensi io.
   scelte:
   - testo: Grazie del posto al fuoco.
     nodoSuccessivo: {fileID: 0}

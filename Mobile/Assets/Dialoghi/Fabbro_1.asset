@@ -13,14 +13,24 @@ MonoBehaviour:
   m_Name: Fabbro_1
   m_EditorClassIdentifier: Assembly-CSharp::DialogoNodo
   chiParla: Fabbro
-  testo: Ferro buono, prezzi onesti. Ti serve qualcosa?
+  testo: Ferro buono, prezzi onesti. Cosa ti serve?
   scelte:
-  - testo: Quella spada lunga dietro di te. Quanto?
+  - testo: Quella spada lunga dietro di te. Quanto costa?
     nodoSuccessivo: {fileID: 11400000, guid: db1c175732385dc4e82e53c8b18a9542, type: 2}
     condizione: 4
     parametroCondizione: 0
     effetti: []
-  - testo: Come va il lavoro?
+  - testo: Il vecchio dice che sei stato nelle segrete.
+    nodoSuccessivo: {fileID: 11400000, guid: 6bd84e0c6a40f17409dcd630daa5f41d, type: 2}
+    condizione: 0
+    parametroCondizione: 0
+    effetti: []
+  - testo: Il demone non c'e' piu'.
+    nodoSuccessivo: {fileID: 11400000, guid: 6c0b1bc7400376c459c168886d66abf9, type: 2}
+    condizione: 5
+    parametroCondizione: 0
+    effetti: []
+  - testo: Niente, grazie.
     nodoSuccessivo: {fileID: 0}
     condizione: 0
     parametroCondizione: 0

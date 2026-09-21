@@ -1,13 +1,15 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Schermata di game over. Va sul Canvas creato da
 /// Tools > UI > Costruisci schermata Game Over.
 ///
-/// Ascolta PlayerHealth.OnDeath, mostra il pannello dopo una breve pausa e, al tocco
-/// di "Riprova", chiama PlayerRespawn.Respawn().
+/// Ascolta PlayerHealth.OnDeath e mostra il pannello dopo una breve pausa. Con tornaAlMenu
+/// (default) dopo qualche secondo, o al tocco del pulsante, si torna al menu principale;
+/// senza, il pulsante chiama PlayerRespawn.Respawn().
 /// </summary>
 public class GameOverUI : MonoBehaviour
 {
@@ -26,6 +28,14 @@ public class GameOverUI : MonoBehaviour
     [SerializeField] private float showDelay = 1f;
     [Tooltip("Se true, congela il gioco (timeScale = 0) mentre il pannello e' visibile.")]
     [SerializeField] private bool pauseGame = true;
+
+    [Header("Ritorno al menu")]
+    [Tooltip("Acceso: alla morte si torna al menu principale (da li' Continua o Nuova Partita). " +
+             "Spento: il pulsante fa rinascere il player allo start, come prima.")]
+    [SerializeField] private bool tornaAlMenu = true;
+    [SerializeField] private string scenaMenu = "MainMenu";
+    [Tooltip("Secondi (tempo reale) in cui 'SEI MORTO' resta a schermo prima di tornare al menu da solo.")]
+    [SerializeField] private float attesaMenu = 2.5f;
 
     private Coroutine showCo;
 
@@ -69,12 +79,28 @@ public class GameOverUI : MonoBehaviour
         if (panel != null) panel.SetActive(true);
         if (pauseGame) Time.timeScale = 0f;
 
+        if (tornaAlMenu)
+        {
+            if (attesaMenu > 0f) yield return new WaitForSecondsRealtime(attesaMenu);
+            VaiAlMenu();
+        }
+
         showCo = null;
     }
 
-    /// <summary>Collegato al pulsante "Riprova".</summary>
+    /// <summary>Carica il menu principale. Il timeScale va rimesso a 1 prima: e' statico e sopravvive al cambio di scena.</summary>
+    public void VaiAlMenu()
+    {
+        if (showCo != null) { StopCoroutine(showCo); showCo = null; }
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(scenaMenu);
+    }
+
+    /// <summary>Collegato al pulsante: con tornaAlMenu porta al menu subito, altrimenti fa rinascere.</summary>
     public void Retry()
     {
+        if (tornaAlMenu) { VaiAlMenu(); return; }
+
         if (showCo != null) { StopCoroutine(showCo); showCo = null; }
 
         if (panel != null) panel.SetActive(false);

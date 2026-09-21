@@ -13,8 +13,14 @@ MonoBehaviour:
   m_Name: Cavaliere_1
   m_EditorClassIdentifier: Assembly-CSharp::DialogoNodo
   chiParla: Cavaliere
-  testo: Non spingerti oltre il prato. Quelli che girano qui sono i piu' mansueti.
+  testo: Non spingerti oltre il prato senza una lama degna. Quelli che girano qui
+    sono i piu' mansueti.
   scelte:
+  - testo: Il demone e' caduto.
+    nodoSuccessivo: {fileID: 11400000, guid: 31717d220ee471d478a487ee3100808e, type: 2}
+    condizione: 5
+    parametroCondizione: 0
+    effetti: []
   - testo: Me lo ricordero'.
     nodoSuccessivo: {fileID: 0}
     condizione: 0

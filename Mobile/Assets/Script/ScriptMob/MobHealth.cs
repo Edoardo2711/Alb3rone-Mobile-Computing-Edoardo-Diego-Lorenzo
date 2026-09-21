@@ -48,6 +48,13 @@ public class MobHealth : MonoBehaviour
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
     }
 
+    /// <summary>Riporta la vita al massimo, anche da morto. La usa il boss quando il player muore e si ricomincia.</summary>
+    public void Ripristina()
+    {
+        currentHealth = maxHealth;
+        lastDamageTime = -999f;
+    }
+
     void Die()
     {
         Debug.Log($"{gameObject.name} morto.");

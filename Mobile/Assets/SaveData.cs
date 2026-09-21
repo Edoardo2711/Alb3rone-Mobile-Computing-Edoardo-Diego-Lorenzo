@@ -7,6 +7,9 @@ public class SaveData
 {
     public Vector3 playerPosition;
     public string mapBoundary;
+    // Zoom della camera: alcune transizioni lo cambiano (zona Oggetto, casa della quest).
+    // 0 = salvataggio vecchio senza il dato, si lascia quello attuale.
+    public float zoomCamera;
     public List<InventorySaveData> inventorySaveData;
 
     // Progressione della quest nascosta. Aggiunti dopo: JsonUtility ignora i campi
@@ -17,4 +20,5 @@ public class SaveData
     public bool spadaComprata;
     public bool bossUcciso;
     public bool oggettoPreso;
+    public bool oggettoConsegnato;
 }

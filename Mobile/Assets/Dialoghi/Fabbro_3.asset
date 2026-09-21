@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: Fabbro_3
   m_EditorClassIdentifier: Assembly-CSharp::DialogoNodo
   chiParla: Fabbro
-  testo: Tienila stretta. E se scendi a ovest, non voltarti quando senti il freddo
-    alle spalle.
+  testo: 'Tienila stretta. E quando senti il freddo alle spalle, non voltarti: spostati.'
   scelte:
   - testo: Grazie.
     nodoSuccessivo: {fileID: 0}
