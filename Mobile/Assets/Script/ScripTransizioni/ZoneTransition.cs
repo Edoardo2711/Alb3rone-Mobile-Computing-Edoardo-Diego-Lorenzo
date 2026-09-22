@@ -44,8 +44,6 @@ public class ZoneTransition : MonoBehaviour
              "Va acceso solo sull'ingresso del Dungeon: morendo contro il boss, 'Continua' riparte da li'.")]
     [SerializeField] private bool salvaSeBossVivo = false;
 
-    [SerializeField] private string messaggioSalvataggio = "Partita salvata.";
-
     [Header("Camera (opzionale)")]
     [SerializeField] private bool changeCameraSize = false;
     [SerializeField] private float newCameraSize = 5f;
@@ -122,7 +120,6 @@ public class ZoneTransition : MonoBehaviour
             if (salvataggio != null)
             {
                 salvataggio.SaveGame();
-                if (!string.IsNullOrEmpty(messaggioSalvataggio)) MessaggioSchermo.Mostra(messaggioSalvataggio);
             }
             else
             {

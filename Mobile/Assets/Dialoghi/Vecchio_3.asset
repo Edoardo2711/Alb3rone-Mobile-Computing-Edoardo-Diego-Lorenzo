@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f872405e0c1421746a0df4185848db3a, type: 3}
   m_Name: Vecchio_3
   m_EditorClassIdentifier: Assembly-CSharp::DialogoNodo
-  chiParla: Vecchio
+  chiParla: Anziano signore
   testo: Allora stanotte a Leadale si dorme con la porta aperta. Non credevo di vivere
     abbastanza per dirlo.
   scelte:
-  - testo: Riposa, vecchio.
+  - testo: Riposa, signore.
     nodoSuccessivo: {fileID: 0}
     condizione: 0
     parametroCondizione: 0

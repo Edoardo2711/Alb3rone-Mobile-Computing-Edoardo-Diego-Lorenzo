@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f872405e0c1421746a0df4185848db3a, type: 3}
   m_Name: Vecchio_2
   m_EditorClassIdentifier: Assembly-CSharp::DialogoNodo
-  chiParla: Vecchio
+  chiParla: Anziano signore
   testo: 'Non lo so, e non voglio saperlo. Chiedi a chi batte il ferro: e'' l''unico
     che ci e'' andato vicino ed e'' tornato.'
   scelte:

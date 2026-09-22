@@ -20,7 +20,7 @@ MonoBehaviour:
     condizione: 4
     parametroCondizione: 0
     effetti: []
-  - testo: Il vecchio dice che sei stato nelle segrete.
+  - testo: L'anziano signore dice che sei stato nelle segrete.
     nodoSuccessivo: {fileID: 11400000, guid: 6bd84e0c6a40f17409dcd630daa5f41d, type: 2}
     condizione: 0
     parametroCondizione: 0
